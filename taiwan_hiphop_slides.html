@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台灣饒舌文化深度考據：從地下土壤、經典戰火到大嘻哈浪潮</title>
+  <style>
+    :root {
+      --bg-dark: #0a0c10;
+      --bg-card: rgba(22, 27, 38, 0.85);
+      --bg-card-hover: rgba(30, 38, 54, 0.95);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(245, 158, 11, 0.4);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-gold: #f59e0b;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --font-mono: "JetBrains Mono", Consolas, Menlo, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.07) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.07) 0%, transparent 45%);
+    }
+
+    /* Presentation Frame (16:9 Standard) */
+    .deck-container {
+      position: relative;
+      width: 95vw;
+      max-width: 1240px;
+      height: 88vh;
+      max-height: 700px;
+      background: rgba(13, 16, 23, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Progress Bar */
+    .progress-bar-container {
+      height: 4px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .progress-bar {
+      height: 100%;
+      width: 8.33%;
+      background: linear-gradient(90deg, var(--accent-gold), var(--accent-cyan));
+      transition: width 0.35s ease;
+    }
+
+    /* Slide Content Viewport */
+    .slides-wrapper {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 44px 56px 36px 56px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(40px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    .slide.prev {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-40px);
+    }
+
+    /* Slide Header */
+    .slide-header {
+      margin-bottom: 20px;
+    }
+
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .slide-badge.cyan {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+
+    .slide-badge.green {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .slide-title {
+      font-size: 2.1rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .slide-takeaway {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      line-height: 1.5;
+    }
+    .slide-takeaway strong {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    /* Slide Body Grid Layouts */
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      margin: 12px 0;
+    }
+
+    .card-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .card-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .info-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+    }
+
+    .card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .card-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: #cbd5e1;
+    }
+
+    .card-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    /* Callout & Quotes */
+    .quote-box {
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 4px solid var(--accent-gold);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 18px;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: #fef3c7;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .quote-author {
+      font-size: 0.82rem;
+      font-style: normal;
+      color: var(--accent-gold);
+      font-weight: 600;
+      margin-top: 4px;
+      display: block;
+      text-align: right;
+    }
+
+    /* Footer Metadata */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      font-family: var(--font-mono);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 14px;
+    }
+
+    /* Cover Slide Specific */
+    .cover-slide {
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+    .cover-title {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #ffffff 40%, #f59e0b 80%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .cover-subtitle {
+      font-size: 1.25rem;
+      color: #cbd5e1;
+      max-width: 760px;
+      line-height: 1.6;
+      margin: 0 auto;
+    }
+    .cover-pills {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+    .cover-pill {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #e2e8f0;
+    }
+
+    /* Bottom Control Bar */
+    .deck-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: rgba(10, 13, 20, 0.98);
+      border-top: 1px solid var(--border-color);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: var(--accent-gold);
+      color: #fff;
+    }
+
+    .dots-container {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .dot.active {
+      width: 22px;
+      border-radius: 10px;
+      background: var(--accent-gold);
+    }
+
+    .key-hint {
+      display: inline-block;
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      font-size: 0.74rem;
+      margin: 0 2px;
+    }
+
+    /* Comparison Table in Slide 11 */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr 1fr;
+      gap: 10px;
+      background: rgba(22, 27, 38, 0.7);
+      border-radius: 10px;
+      padding: 14px 18px;
+      border: 1px solid var(--border-color);
+      font-size: 0.88rem;
+    }
+    .compare-header {
+      font-weight: 700;
+      color: var(--accent-cyan);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 6px;
+    }
+    .compare-cell {
+      padding: 6px 0;
+      color: #cbd5e1;
+    }
+    .compare-label {
+      font-weight: 600;
+      color: var(--accent-gold);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deck-container">
+    <!-- Top Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Slides Viewport -->
+    <div class="slides-wrapper">
+
+      <!-- SLIDE 1: COVER -->
+      <div class="slide cover-slide active" data-index="1">
+        <div>
+          <div class="slide-badge">Taiwan Hip-Hop LLM Wiki Synthesis</div>
+          <h1 class="cover-title">台灣饒舌文化深度考據</h1>
+          <p class="cover-subtitle">從地下土壤、經典戰火到大嘻哈浪潮：獨立廠牌開拓、派系論戰底線與新世代交替史</p>
+          <div class="cover-pills">
+            <span class="cover-pill">01. 顏社生活美學與爵士嘻哈</span>
+            <span class="cover-pill">02. 學院派雙押與經典 Beef 戰役</span>
+            <span class="cover-pill">03. 2020s 大嘻哈時代新浪潮</span>
+          </div>
+        </div>
+        <div class="slide-footer" style="width: 100%;">
+          <span>考據年代：2000 – 2026</span>
+          <span>按 <span class="key-hint">→</span> 或 <span class="key-hint">Space</span> 開始瀏覽</span>
+          <span>LLM Wiki Compounding Artifact</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 2: OVERVIEW -->
+      <div class="slide" data-index="2">
+        <div class="slide-header">
+          <div class="slide-badge">Overview • 歷史三座標</div>
+          <h2 class="slide-title">台灣饒舌演進的三大歷史維度</h2>
+          <p class="slide-takeaway">台饒並非橫空出世，而是經歷<strong>「美學本土生活化」</strong>、<strong>「技術與底線碰撞」</strong>，最終在<strong>「全媒體時代引爆交替」</strong>。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">🎷</span>
+              <div class="card-title">第一單元：獨立廠牌開拓</div>
+              <div class="card-desc">2005 年顏社創立，迪拉胖打破美式硬核憤怒框架，蛋堡以《收斂水》與《月光》引領都會生活風格與爵士嘻哈風潮。</div>
+              <div class="card-tag">#顏社 #蛋堡 #爵士嘻哈</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🥊</span>
+              <div class="card-title">第二單元：經典戰火與底線</div>
+              <div class="card-desc">參劈引領學院派雙押技術革命，經歷 2008 The Wall 暴力衝突確立創作自由，頑童〈30CM〉以迷因戰歌逆襲。</div>
+              <div class="card-tag">#參劈雙押 #TheWall #30CM</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🌊</span>
+              <div class="card-title">第三單元：新時代交替浪潮</div>
+              <div class="card-desc">2020 年代《大嘻哈時代》綜藝規格引爆，熊仔擔任文化翻譯，Gummy B 臥室全自主產製與阿跨面草根美學登頂。</div>
+              <div class="card-tag">#大嘻哈時代 #熊仔 #GummyB #阿跨面</div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>架構導覽</span>
+          <span>核心論述骨幹：前兩大重點佔全書重心</span>
+          <span>Slide 2 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 3: KAO INC -->
+      <div class="slide" data-index="3">
+        <div class="slide-header">
+          <div class="slide-badge">Part 1 • 獨立廠牌開拓 (01)</div>
+          <h2 class="slide-title">顏社 KAO!INC. 的創立：生活即是 Real</h2>
+          <p class="slide-takeaway">走出美式匪幫與幫派硬核的單一複製，在<strong>淡水頂加公寓</strong>開闢屬於台灣本土的獨立音樂美學。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">🏢</span>
+              <div class="card-title">淡水頂加公寓草創 (2005)</div>
+              <div class="card-desc">主理人迪拉胖創辦淡江摩音社，深研黑人音樂。他將鬆散的地下論壇與校園 Demo 整合，建立具備完整制度的獨立廠牌。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">☕</span>
+              <div class="card-title">顛覆「憤怒」的唯一性</div>
+              <div class="card-desc">提出「日常生活的切片才是最真實的 Real」。拒絕無病呻吟或虛構暴力，將音樂鏡頭對準青年日常困境與都會氣味。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">💿</span>
+              <div class="card-title">生活品味與實體美學</div>
+              <div class="card-desc">堅持極致的唱片實體視覺裝幀與黑膠（Vinyl）文化，並跨足咖啡店（BEANS & BEATS），將嘻哈轉化為全方位生活風格。</div>
+            </div>
+          </div>
+          <div class="quote-box">
+            「嘻哈不一定只有憤怒，日常的生活切片才是最真實的 Real。」
+            <span class="quote-author">—— 顏社主理人 迪拉胖 (Dela Fat)</span>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>出處：raw/20261118_kaoinc_and_jazz_hiphop.md</span>
+          <span>廠牌制度化里程碑</span>
+          <span>Slide 3 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: SOFT LIPA & SHOU LIAN SHUI -->
+      <div class="slide" data-index="4">
+        <div class="slide-header">
+          <div class="slide-badge">Part 1 • 獨立廠牌開拓 (02)</div>
+          <h2 class="slide-title">蛋堡與「輕饒舌」：包紮傷口的《收斂水》</h2>
+          <p class="slide-takeaway">以日常保養品為喻，用<strong>詩意敘事與慵懶 Flow</strong>，徹底破除「饒舌非得叫囂」的刻板印象。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">🧸</span>
+              <div class="card-title">〈關於小熊〉的敘事史詩</div>
+              <div class="card-desc">以一隻玩偶泰迪熊視角見證情侶從相愛到分離。精巧的蒙太奇結構與生活細節，成為華語嘻哈最具感染力的抒情經典。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">💧</span>
+              <div class="card-title">聲調美學與輕饒舌確立</div>
+              <div class="card-desc">〈收斂水〉與〈Hit the Rhyme〉將押韻化為自然呼吸。重音不刻意敲擊，而是溫柔包覆都市青年的焦慮與心靈傷口。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🎓</span>
+              <div class="card-title">突破地下同溫層破圈</div>
+              <div class="card-desc">2009 年發行後大舉攻佔大專院校、獨立書店與文藝圈層，讓原本不聽嘻哈的大眾開始愛上饒舌，入圍金曲最佳新人。</div>
+            </div>
+          </div>
+          <div class="quote-box">
+            「他的詞不是拿來刺傷人的，是拿來包紮傷口的。」
+            <span class="quote-author">—— 台灣獨立樂評界對《收斂水》之評價</span>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>作品：wiki/works/Shou_Lian_Shui.md</span>
+          <span>美學破圈里程碑</span>
+          <span>Slide 4 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: MOONLIGHT -->
+      <div class="slide" data-index="5">
+        <div class="slide-header">
+          <div class="slide-badge">Part 1 • 獨立廠牌開拓 (03)</div>
+          <h2 class="slide-title">《月光》跨界巔峰：現場爵士即興的黃金天花板</h2>
+          <p class="slide-takeaway">蛋堡聯手日本五重奏 JABBERLOOP 閉關合奏，<strong>現場真實管樂與饒舌緊密咬合</strong>，首度叩關金曲殿堂。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">🎷</span>
+              <div class="card-title">跨國閉關 Live Jam</div>
+              <div class="card-desc">2010 年團隊遠赴日本，捨棄傳統電腦軟體編曲取樣，以真實小號、薩克斯風與放克貝斯現場即興對話，錄製純粹律動。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🌌</span>
+              <div class="card-title">靈魂神曲〈過程〉</div>
+              <div class="card-desc">「這一切都是過程，望著遠處的火星……」充滿存在主義哲學禪意，撫慰無數迷惘年輕人，成為台饒跨時代心靈國歌。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🏆</span>
+              <div class="card-title">叩關金曲獎主流大獎</div>
+              <div class="card-desc">入圍第 22 屆金曲獎「最佳國語專輯獎」，打破了主流官方評審對獨立嘻哈樂種的藩籬，奠定爵士嘻哈無可撼動的經典地位。</div>
+            </div>
+          </div>
+          <div class="quote-box">
+            「這一切都是過程，望著遠處的火星，想著什麼時候才能抵達……」
+            <span class="quote-author">—— 蛋堡 × JABBERLOOP〈過程〉(2010)</span>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>作品：wiki/works/Moonlight_Jabberloop.md</span>
+          <span>華語爵士嘻哈顛峰</span>
+          <span>Slide 5 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 6: TRIPOETS & RHYME -->
+      <div class="slide" data-index="6">
+        <div class="slide-header">
+          <div class="slide-badge cyan">Part 2 • 經典戰役與論辯 (01)</div>
+          <h2 class="slide-title">學院派的技術革命：參劈與中文「雙押」格律</h2>
+          <p class="slide-takeaway">以字典為軍火，參劈《押韻的開始》宣告中文饒舌脫離隨性單押，進入<strong>精密多音節排押技術時代</strong>。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">📚</span>
+              <div class="card-title">台大嘻研社的學術解構</div>
+              <div class="card-desc">老莫、林老師、小個三人深入研讀西方 East Coast Boom Bap，將英語的多音節韻腳結構在地化為中文嚴密格律。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">⚔️</span>
+              <div class="card-title">中文「雙押」系統化確立</div>
+              <div class="card-desc">打破早期僅在句末押單字的口語習慣，開創二字、三字對稱的多音節雙押（Double Rhyme）與排押，極大提升歌詞密度。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">📖</span>
+              <div class="card-title">〈學院派〉立宗宣言</div>
+              <div class="card-desc">「在我們的褲檔沒放硬梆梆的槍，是一大本字典藏著千萬字的量。」證明知識分子能以文字與智識技壓群雄。</div>
+            </div>
+          </div>
+          <div class="quote-box">
+            「押韻的學校是由誰成立？由參劈開始我們開發饒舌技術！」
+            <span class="quote-author">—— 參劈 (TriPoets)〈學院派〉(2008)</span>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>出處：raw/20261118_academic_vs_street_and_early_beefs.md</span>
+          <span>中文格律技術奠基</span>
+          <span>Slide 6 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 7: THE WALL 2008 -->
+      <div class="slide" data-index="7">
+        <div class="slide-header">
+          <div class="slide-badge cyan">Part 2 • 經典戰役與論辯 (02)</div>
+          <h2 class="slide-title">街頭衝擊與文化底線：The Wall 事件與 Keep it on Wax</h2>
+          <p class="slide-takeaway">歌詞針砭引發的暴力衝突，確立了台饒<strong>「創作自由神聖」</strong>與<strong>「爭端止於音樂」</strong>的不可動搖底線。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">⚠️</span>
+              <div class="card-title">導火線：歌詞針砭商業化</div>
+              <div class="card-desc">參劈在歌曲〈Used to love her〉探討嘻哈商業化問題，引發麻吉娛樂旗下「三角COOL」成員不滿，認為遭到影射。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🚨</span>
+              <div class="card-title">2008.07.26 襲擊事件</div>
+              <div class="card-desc">參劈結束 The Wall 演出後遭圍毆，老莫鼻樑骨折、腦震盪。這是台饒史上最嚴重的實體暴力案，引發社會震動。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🛡️</span>
+              <div class="card-title">文化共識與法律追責</div>
+              <div class="card-desc">MC HotDog 與張震岳親赴醫院嚴厲譴責暴力；施暴者道歉退團並循法律程序，全圈確立「爭端止於麥克風」的紅線。</div>
+            </div>
+          </div>
+          <div class="quote-box">
+            「嘻哈比的是文字與思想，如果歌詞不合就要動手，台灣嘻哈文化將倒退二十年！」
+            <span class="quote-author">—— MC HotDog 熱狗 & 張震岳 (2008 記者會)</span>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>事件：wiki/events/2008_The_Wall_Assault.md</span>
+          <span>台饒創作自由之石</span>
+          <span>Slide 7 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 8: 30CM BEEF -->
+      <div class="slide" data-index="8">
+        <div class="slide-header">
+          <div class="slide-badge cyan">Part 2 • 經典戰役與論辯 (03)</div>
+          <h2 class="slide-title">網路迷因戰歌：頑童MJ116〈30CM〉與街頭逆襲</h2>
+          <p class="slide-takeaway">捨棄繁複字典修辭，以<strong>粗暴直白與荷爾蒙迷因</strong>打響網路時代傳播奇蹟，奠定木柵霸主地位。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">🔥</span>
+              <div class="card-title">戰火引爆：YZ 與滿人心結</div>
+              <div class="card-desc">2011 年底 YZ 發布〈Hater〉挑起戰端，加上瘦子（E.SO）與 AP 滿人過往夜店演出的門票爭端，陣營對立全面浮現。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">💣</span>
+              <div class="card-title">〈30CM〉破百萬點擊奇蹟</div>
+              <div class="card-desc">頑童聯手楊素貞以「俺有30公分」狂妄洗腦開砲，無差別掃射滿人與周湯豪，透過 Facebook 與 YouTube 引爆全民瘋轉。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🤝</span>
+              <div class="card-title">成熟風度：2023 世紀大和解</div>
+              <div class="card-desc">十年恩怨隨風而逝，2023 年瘦子登上滿人節目《有夠難約》同台暢聊，笑談當年衝動，展現台饒社群成熟格局。</div>
+            </div>
+          </div>
+          <div class="quote-box">
+            「我不只操你，也操滿人……俺有三十公分！」
+            <span class="quote-author">—— 頑童MJ116 × 楊素貞〈30CM〉(2011)</span>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>作品：wiki/works/30CM_Diss.md | 事件：2011_30CM_Beef_War.md</span>
+          <span>街頭迷因傳播里程碑</span>
+          <span>Slide 8 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 9: THE RAPPERS ERA -->
+      <div class="slide" data-index="9">
+        <div class="slide-header">
+          <div class="slide-badge green">Part 3 • 新時代浪潮 (01)</div>
+          <h2 class="slide-title">《大嘻哈時代》引爆：從地下小眾到全民規格</h2>
+          <p class="slide-takeaway">主流傳媒資本、頂級舞美與社群演算法加乘，將台灣累積二十年的<strong>地下能量一次向大眾噴發</strong>。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">📺</span>
+              <div class="card-title">傳播渠道徹底倒置</div>
+              <div class="card-desc">過去地下歌手需苦熬 Livehouse 與 StreetVoice 數年；電視與 YouTube 綜藝讓新人能在 3 個月內直接躍升全台焦點。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">⚡</span>
+              <div class="card-title">從一季到二季的進化</div>
+              <div class="card-desc">第一季（2021）樹立專業嘻哈競賽殿堂標準；第二季（2023）節奏明快、迷因狂歡、謝乾乾執導舞美，全面引爆現象級熱潮。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🏟️</span>
+              <div class="card-title">體育館級的產業產值</div>
+              <div class="card-desc">決賽直攻台北流行音樂中心（北流），選手巡演門票秒殺，嘻哈正式接管主流商業代言與大型音樂節壓軸核心。</div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>時代分期：2020s 大嘻哈世代</span>
+          <span>綜藝資本與地下能量結合</span>
+          <span>Slide 9 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 10: NEW ICONS: KUMACHAN, GUMMY B, AQUAMAN -->
+      <div class="slide" data-index="10">
+        <div class="slide-header">
+          <div class="slide-badge green">Part 3 • 新時代浪潮 (02)</div>
+          <h2 class="slide-title">傳承與新星交鋒：熊仔、Gummy B 與阿跨面</h2>
+          <p class="slide-takeaway">學院技術的大眾普及、<strong>臥室自主全能產製</strong>，以及<strong>本土草根台味美學</strong>的現代強勢復興。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">🎓</span>
+              <div class="card-title">熊仔：技術翻譯者</div>
+              <div class="card-desc">學院派集大成者。在評審席將複雜的 Rhyme Scheme、Flow 變奏轉譯為通俗語言，並以《PRO》勇奪金曲最佳華語專輯。</div>
+              <div class="card-tag">#學院傳承 #文化普及</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🎧</span>
+              <div class="card-title">Gummy B：臥室音樂人極致</div>
+              <div class="card-desc">台大嘻研出身，詞曲編混全包。代表作〈敦化南路〉以精準內省筆法與 Melodic 節奏，成為當代都市青年精神焦慮代言人。</div>
+              <div class="card-tag">#全自主產製 #敦化南路</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🩴</span>
+              <div class="card-title">阿跨面：草根台味登頂</div>
+              <div class="card-desc">經典藍白拖與風獅爺裝束，純台語爆發力奪下第二季總冠軍。打破美式潮流崇拜，證明「本土草根才是最頂級的 Real」。</div>
+              <div class="card-tag">#台語饒舌 #本土自豪</div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>新舊典範案例剖析</span>
+          <span>多元美學並立的當代景觀</span>
+          <span>Slide 10 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 11: FULL COMPARISON MATRIX -->
+      <div class="slide" data-index="11">
+        <div class="slide-header">
+          <div class="slide-badge green">Synthesis • 深度對照</div>
+          <h2 class="slide-title">世代交替全景對比：新舊台饒的四個質變維度</h2>
+          <p class="slide-takeaway">從<strong>「產製方式、題材視野、傳播模式到美學光譜」</strong>的歷史性跨越。</p>
+        </div>
+        <div class="slide-body">
+          <div class="compare-grid">
+            <div class="compare-header">比較維度</div>
+            <div class="compare-header">地下黃金年代 (2000–2012)</div>
+            <div class="compare-header">大嘻哈新世代 (2020s 至今)</div>
+
+            <div class="compare-cell compare-label">1. 產製模式</div>
+            <div class="compare-cell">分工依賴外部製作人取樣、購買海外現成 Beat</div>
+            <div class="compare-cell">臥室全能音樂人（詞曲、編曲、錄音、混音全自主）</div>
+
+            <div class="compare-cell compare-label">2. 題材內容</div>
+            <div class="compare-cell">街頭兄弟、幫派幻想、文字字典、對主流的不滿</div>
+            <div class="compare-cell">個人心理自省、都會焦慮、本土草根自信、幽默解構</div>
+
+            <div class="compare-cell compare-label">3. 傳播渠道</div>
+            <div class="compare-cell">BBS 論壇、地下卡帶 Demo、StreetVoice、小型場館</div>
+            <div class="compare-cell">電視與串流綜藝、YouTube 演算法、Shorts 短影音爆發</div>
+
+            <div class="compare-cell compare-label">4. 音樂風格</div>
+            <div class="compare-cell">經典東岸 Boom Bap、西岸 G-Funk、美式硬核</div>
+            <div class="compare-cell">Trap, Drill, Melodic, 爵士合成器, 復古台客浪潮</div>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>跨維度橫向分析</span>
+          <span>質變核心：自主性、多元度與本土自信</span>
+          <span>Slide 11 / 12</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 12: CONCLUSION -->
+      <div class="slide" data-index="12">
+        <div class="slide-header">
+          <div class="slide-badge">Conclusion • 結語與展望</div>
+          <h2 class="slide-title">枝葉繁茂的多元宇宙：傳承不是淘汰，而是並立</h2>
+          <p class="slide-takeaway">顏社開闢了<strong>生活與爵士可能</strong>，前輩劃定了<strong>文化底線</strong>，新世代乘風破浪——台饒已無需被單一定義。</p>
+        </div>
+        <div class="slide-body">
+          <div class="card-grid-3">
+            <div class="info-card">
+              <span class="card-icon">🌱</span>
+              <div class="card-title">美學寬度：生活即力量</div>
+              <div class="card-desc">從早期的憤怒抗爭到顏社的生活美學，台饒證明了最微小的生活切片，能承載最深厚的文化力量。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">⚖️</span>
+              <div class="card-title">技術與倫理：神聖底線</div>
+              <div class="card-desc">學院派奠定了中文格律殿堂，慘痛的暴力教訓確立了 Keep it on wax。自由創作與麥克風較量是永遠的基石。</div>
+            </div>
+            <div class="info-card">
+              <span class="card-icon">🚀</span>
+              <div class="card-title">新宇宙：本土自信奔湧</div>
+              <div class="card-desc">新一代饒舌歌手不再仰望美式潮流，以本土方言、自我剖白與全能技術昂首闊步，成為華語世界最強原創引擎。</div>
+            </div>
+          </div>
+          <div class="quote-box" style="text-align: center;">
+            「這一切都是過程——台灣饒舌的故事，才正要迎來最壯麗的章節。」
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>感謝聆聽 • 台灣饒舌文化深度考據知識庫</span>
+          <span>Made with Karpathy LLM Wiki Architecture</span>
+          <span>Slide 12 / 12</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="deck-controls">
+      <div>
+        <span id="currentSlideDisplay">Slide 1 / 12</span>
+        <span style="margin-left: 12px; color: #475569;">| 鍵盤導航: <span class="key-hint">←</span> <span class="key-hint">→</span> <span class="key-hint">Space</span> <span class="key-hint">F: 全螢幕</span></span>
+      </div>
+
+      <div class="dots-container" id="dotsContainer"></div>
+
+      <div class="nav-buttons">
+        <button class="btn" id="prevBtn">上一頁 (Prev)</button>
+        <button class="btn" id="nextBtn">下一頁 (Next)</button>
+        <button class="btn" id="fullscreenBtn">⛶ 全螢幕</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentIndex = 0;
+
+    const progressBar = document.getElementById('progressBar');
+    const currentSlideDisplay = document.getElementById('currentSlideDisplay');
+    const dotsContainer = document.getElementById('dotsContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    // Initialize dots
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (i === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(i));
+      dotsContainer.appendChild(dot);
+    }
+    const dots = document.querySelectorAll('.dot');
+
+    function updateSlide() {
+      slides.forEach((slide, idx) => {
+        slide.classList.remove('active', 'prev');
+        if (idx === currentIndex) {
+          slide.classList.add('active');
+        } else if (idx < currentIndex) {
+          slide.classList.add('prev');
+        }
+      });
+
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === currentIndex);
+      });
+
+      const progress = ((currentIndex + 1) / totalSlides) * 100;
+      progressBar.style.width = progress + '%';
+      currentSlideDisplay.textContent = `Slide ${currentIndex + 1} / ${totalSlides}`;
+
+      prevBtn.disabled = (currentIndex === 0);
+      nextBtn.disabled = (currentIndex === totalSlides - 1);
+      prevBtn.style.opacity = (currentIndex === 0) ? '0.5' : '1';
+      nextBtn.style.opacity = (currentIndex === totalSlides - 1) ? '0.5' : '1';
+    }
+
+    function nextSlide() {
+      if (currentIndex < totalSlides - 1) {
+        currentIndex++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(index) {
+      if (index >= 0 && index < totalSlides) {
+        currentIndex = index;
+        updateSlide();
+      }
+    }
+
+    // Keyboard controls
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      if (touchEndX < touchStartX - 50) nextSlide();
+      if (touchEndX > touchStartX + 50) prevSlide();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    // Initial update
+    updateSlide();
+  </script>
+</body>
+</html>

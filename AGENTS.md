@@ -1,76 +1,105 @@
-# AGENTS.md — 押韻嘻哈創作工具人 LLM Wiki 維護與對韻引擎規範 (Schema & Workflows)
+# AGENTS.md — 台灣饒舌文化深度考據知識庫 (Taiwan Hip-Hop LLM Wiki)
 
-本文件定義了「押韻嘻哈創作工具人 LLM Wiki」的架構、**發音優先對韻演算法規範**、命名慣例與自動化維護工作流。你（LLM Agent）的角色是這座**持久型、具複利效應的嘻哈創作知識庫（Persistent & Compounding Hip-Hop Knowledge Base）**的首席對韻工具人與共同創作者（Co-writer / Ghostwriter Assistant）。
-
----
-
-## 一、 核心對韻匹配法則 (Core Rhyme Matching Engine Rules)
-
-當作曲家/創作者在寫歌卡詞、提供一個目標詞（Target Word）要求尋找押韻時，你必須嚴格遵循以下**「三階優先級」與「字數精準對齊」**原則：
-
-### 1. 優先級排序：發音絕對優先 ＞ 語義/意境相關 ＞ 純聲學跳押
-- **第一優先：發音咬字精準度（Phonetic Precision — 最重要！）**
-  - 拆解目標詞**每個字的韻母（Nucleus + Coda）與介音（Medial）**，確保推薦詞的每一個音節在口腔開合度、鼻音收尾（`-n` / `-ng`）與母音共鳴上高度吻合。
-  - **範例解析（「窗戶」 `chuāng hù` → 韻母組合 `ang + u`）**：
-    - 第 1 字韻母為 `-uang / -ang`（江陽轍），第 2 字韻母為 `-u`（姑蘇轍）。
-    - **完美發音匹配（Exact Vowel Chain `ang + u`）**：`倉庫` (`cāng kù`)、`商務` (`shāng wù`)、`荒蕪` (`huāng wú`)、`光顧` (`guāng gù`)、`匡扶` (`kuāng fú`)、`雙目` (`shuāng mù`)、`槍管/槍托(變體)`、`當舖` (`dàng pù`)、`航路` (`háng lù`)、`常駐` (`cháng zhù`)、`強渡` (`qiáng dù`)、`亡故` (`wáng gù`)、`香霧` (`xiāng wù`)。
-    - **口語近音通押（Slant / 口語實戰通押 `an/eng + u`）**：`帳戶` (`zhàng hù` — 完美同韻)、`山路` (`shān lù` — `an/ang` 鼻音通押)、`生路` (`shēng lù` — `eng/ang` 後鼻音通押)、`迷霧/煙霧`（單尾韻搭配前字諧音）。
-- **第二優先：語義與情境關聯（Semantic & Vibe Relevance — 次要加分！）**
-  - 在發音吻合的前提下，優先將候選詞依據**「與輸入詞/當前歌詞主題的語義關聯度」**排序：
-    1. **🔥 高度語義關聯（發音吻合 ＋ 意境直接連貫）**：例如輸入「窗戶」（室內、孤獨、街景、看出去），優先推薦 `荒蕪`（窗外荒蕪）、`香霧`（窗邊吐出的煙霧）、`雙目`（凝視窗外的雙目）、`當舖`（街對面的當舖霓虹）、`倉庫`（地下室倉庫）。
-    2. **⚡ 態度與轉折延伸（發音吻合 ＋ 饒舌態度/Punchline 轉折）**：例如 `光顧`（沒人光顧的房間）、`常駐`（寂寞常駐）、`商務`（不屑裝作商務）、`航路`（偏離航路）。
-    3. **🎲 純聲學對齊（發音吻合，語義無關但可作跳押/雙關跳板）**：就算意思完全無關也沒關係，只要發音咬得緊，照樣列出供創作者激發跳躍式 Punchline（如 `匡扶`、`強渡`）。
-
-### 2. 指定押韻字數機制 (N-Syllable Constraint: 1 / 2 / 3 / 4+ 字)
-創作者可以隨時指定要押幾個字，你必須按指定字數嚴格對齊每一個音節的韻母鏈（Vowel Chain）：
-- **單押（1 字）**：僅對齊最後一個字的韻母（例如「窗戶」只押尾字 `u`：孤獨、迷霧、殘酷、程度）。
-- **雙押（2 字，最常用）**：嚴格對齊倒數兩個字的韻母鏈（例如「窗戶」= `ang + u` → `荒蕪`、`當舖`、`雙目`、`倉庫`）。
-- **三押（3 字）**：嚴格對齊三個音節的韻母鏈，包含「3字名詞」與「1+2 / 2+1 動賓短語」（例如輸入「開窗戶」 `ai + ang + u` → `在倉庫`、`太荒蕪`、`賣當舖`、`拆槍管(諧)`、`拍商務`、`白煙霧(an/ang通押)`）。
-- **四押以上 / 整句連押（4+ 字）**：將四字成語、俗諺或 2+2 短句拆解對齊（例如輸入「打開窗戶」 `a + ai + ang + u` → `大開倉庫`、`踏入荒蕪(u/ai變體)`、`拿來當舖`、`下海商務`）。
+本文件是本知識庫的「憲章與架構規範（The Schema）」，規範 LLM Agent 如何維護、調研、編譯與查詢本專案中的台灣饒舌文化知識。
+本系統基於 **Karpathy LLM Wiki** 典範建構，專注於**「台灣饒舌音樂、歌手、製作人、廠牌與歷史文化演進」**之深度歷史與文化考據。
 
 ---
 
-## 二、 核心三層架構與目錄規範 (Directory Structure)
+## 核心哲學 (Core Philosophy)
 
-本知識庫嚴格區分為三層：**原始素材層（Raw Sources）**、**知識庫層（The Wiki）**與**規範層（The Schema，即本文件）**，並配備專屬的**地下煙霧刺青風互動式對韻網頁（`underground_rhyme_wiki.html`）**。
+1. **編譯優於檢索 (Compile, Don't Just Retrieve)**：
+   知識庫不是單純的文件堆疊或動態 RAG，而是一座**持久、具複合積累性 (Compounding Artifact) 的網狀知識體系**。每次讀入新文獻，Agent 負責將新事實編譯更新至既有實體、時代、概念頁面中，保持全庫最新與相互關聯。
+2. **客觀考據與歷史多重視角 (Rigorous Historical Scholarliness)**：
+   台饒歷史充滿地下與主流激盪、廠牌合縱連橫、歷史 Beef 與世代風格轉向。所有論述必須有文獻佐證（來源引自 `raw/` 中的原始資料），遇到爭議觀點時記錄各方說法與時代脈絡，不做單一主觀評判。
+3. **通用相容的超連結 (Universal Markdown Linking)**：
+   本 Wiki 不依賴特定筆記軟體（如 Obsidian 專屬語法），一律採用**標準 Markdown 相對連結**（如 `[熱狗](../entities/MC_HotDog.md)`），確保在 VS Code、GitHub 及任何預覽器中皆能原生點擊導覽。
+4. **零骨架自生長 (Zero-Stub Organic Growth)**：
+   不預先建立缺乏實質內容的空殼頁面（No empty stubs）。知識庫從第一篇原始文獻匯入開始，逐步開枝散葉、有機長成。
 
-```text
-hiphop-llm-wiki/
-├── AGENTS.md                        # [規範層] LLM 讀取的架構、發音優先對韻法則與工作流指南
-├── underground_rhyme_wiki.html      # [互動工具層] Underground Smoke & Tattoo 風格押韻檢索與 Wiki 工作台網頁
-├── raw/                             # [原始素材層] 唯讀（Immutable）！LLM 僅讀取，絕不修改或覆寫
-│   ├── lyrics/                      # 收集的經典歌詞、地下饒舌歌詞、自身過往作品原稿
-│   ├── freestyles/                  # 語音轉文字的 Freestyle 逐字稿、隨手記下的碎片靈感
-│   ├── articles_interviews/         # 饒舌歌手專訪、樂評、嘻哈歷史文章、製作人解析
-│   ├── beats_meta/                  # Beat 資訊、BPM、調性、取樣來源紀錄
-│   └── assets/                      # 圖片、手寫筆記掃描檔
-└── wiki/                            # [知識庫層] 由 LLM 完全擁有、撰寫與維護的 Markdown 網路
-    ├── index.md                     # 內容導向總目錄（分類索引所有頁面、一行摘要與統計）
-    ├── log.md                       # 時間導向操作日誌（Append-only 紀錄每次 ingest / query / lint）
-    ├── rhyme_vault/                 # 【韻腳金庫】按韻母鏈（如 ang+u, ao+iao）、字數（1~4+字）、語義關聯分類
-    ├── punchlines/                  # 【Punchline 與修辭庫】雙關（Wordplay）、隱喻、諧音梗
-    ├── flows_cadence/               # 【Flow 與律動拆解】拍號切分、Boombap 律動、Trap 留白、換氣點分析
-    ├── themes_concepts/             # 【主題與概念庫】地下煙霧、街頭敘事、深夜孤獨、Battle 攻擊角度
-    ├── artists_styles/              # 【饒舌歌手與流派檔案】特定 Rapper 的押韻習慣與代表作拆解
-    ├── beats_pocket/                # 【Beat 與 Pocket 搭配指南】不同 BPM 區間與曲風的入拍策略
-    └── drafts_workbench/            # 【創作工作台】從 Query 沉澱出的 Verse 草稿、Hook 提案與改稿紀錄
+---
+
+## 系統三層架構 (Three-Layer Architecture)
+
+```
+LLMWiki專案黑屋for_10th/
+├── raw/                 # 【層級一：原始來源庫】唯讀、不可竄改、不可抹除，調研產生的原始文獻
+├── wiki/                # 【層級二：LLM 編譯知識庫】由 Agent 撰寫與更新之 Markdown 知識頁面
+│   ├── entities/        # 饒舌歌手 (MC)、製作人 (Beatmaker/Producer)、DJ、廠牌主理人
+│   ├── crews/           # 廠牌 (Labels)、廠牌同盟、音樂團隊 (Crews)
+│   ├── eras/            # 歷史時期與編年史（如：萌芽期、地下黃金年代、金曲串流期、大嘻哈世代）
+│   ├── concepts/        # 技術術語、押韻美學、文化現象（如：Flow、雙押、台語韻腳、Cypher、Beef）
+│   ├── works/           # 里程碑專輯、經典單曲、代表性 Cypher / Battle 錄音
+│   ├── events/          # 指標賽事、文化事件（如：《大嘻哈時代》、Diss 戰事、金曲獎里程碑）
+│   └── synthesis/       # 深度跨維度研究、風格演變對比、文化專題論述
+├── index.md             # 全庫分類導覽與條目總目錄（每次 Ingest 自動同步更新）
+├── log.md               # 時間順序之操作日誌（Ingest、Query Synthesis、Lint 紀錄）
+└── AGENTS.md            # 本規範手冊
 ```
 
 ---
 
-## 三、 三大核心操作工作流 (Core Operations)
+## 核心操作流程 (Workflows)
 
-### 操作 1：`Query & Rhyme Match`（即時對韻、指定字數匹配與共同創作）
-當創作者丟出一個詞（如：「窗戶，幫我押兩個字，最好跟深夜抽菸或房間有關」）：
-1. **聲學拆解（Phonetic Breakdown）**：標出每個字的拼音與韻母鏈（如：`窗戶` → `chuāng hù` → 韻母鏈 `[ang] + [u]`，聲調 `1聲 + 4聲`）。
-2. **分級列出候選韻腳**：
-   - **【Tier 1：發音精準 ＋ 語義/意境契合】**（附上 1 句可直接入詞的 Bar 範例）。
-   - **【Tier 2：發音精準 ＋ 一般通用/跳躍詞彙】**（即使語義不直接相關，也完整列出供挑選）。
-   - **【Tier 3：台灣口語/南方口音通押與中英混押】**（如 `an/ang`、`en/eng` 通押或英文單字諧音）。
-3. **成果回存（Filing Back to Wiki）**：將新開發出的優秀韻群（如 `ang + u` 雙押組）寫入 `wiki/rhyme_vault/`，並更新 `wiki/index.md` 與 `wiki/log.md`。
+### 流程一：調研與原始來源採集 (Research & Sourcing)
+當使用者提出考據主題或提問尚未涵蓋的領域時，Agent 負責網路檢索並固化原始文獻：
+1. **嚴選資料來源**：優先檢索具公信力之專題報導（如《Blow 吹音樂》、《BIOS monthly》、《GQ Taiwan》人物專訪、《關鍵評論網》、嘻哈龍虎門專訪、學術論文、深度 Podcast/節目逐字紀錄）。
+2. **建立原始文獻**：在 `raw/` 建立以日期與主題命名之檔案（例如 `raw/20261118_kaoinc_early_history.md`）。
+3. **文獻必備規格**：
+   - 來源網址 (Source URL) 與 採集日期。
+   - 原作者/訪談者、受訪對象、發佈日期。
+   - 原文摘要與關鍵引言（保持原始陳述，不竄改）。
 
-### 操作 2：`Ingest`（吸收與拆解新素材）
-當創作者將歌詞或靈感放入 `raw/`：提取多音節韻母鏈、Punchline 與 Flow 換氣點，更新至 `wiki/` 各分類頁面，並於 `wiki/log.md` 追加 `## [YYYY-MM-DD] ingest | 素材標題`。
+### 流程二：知識編譯與匯入 (Ingest)
+當 `raw/` 存入新文獻後，Agent 執行嚴謹的知識編譯：
+1. **深入研讀**：通讀 raw 文獻，萃取涉及之「人物、廠牌、時代事件、關鍵作品、技法概念」。
+2. **跨頁更新與創建**：
+   - 若提及之實體尚無頁面，建立該頁面，並填寫規範之 YAML Frontmatter。
+   - 若已有頁面，依據新資訊補充內容（例如歌手新增經歷、音樂風格轉變、歷史訪談證言），並註明出處。
+   - 建立相互參照的標準相對路徑連結。
+3. **更新總目錄**：在 `index.md` 對應分類下加入新頁面條目與一句話精準摘要。
+4. **登記日誌**：在 `log.md` 追寫一筆記錄（格式：`## [YYYY-MM-DD] ingest | 文獻名稱`）。
 
-### 操作 3：`Lint`（知識庫健檢與靈感挖掘）
-定期檢查 `wiki/` 是否有孤島頁面、陳詞濫調過度重複用韻，並分析哪些雙押/三押韻母組合尚未建立專頁，提出擴充建議。
+### 流程三：深度查詢與論述沉澱 (Query & Synthesis)
+1. 使用者提問時，Agent 優先檢索 `index.md` 與 `wiki/` 既有條目進行整合論述。
+2. **研究沉澱**：若回答產出具有長遠參考價值的「跨時代演進分析」、「派系/風格深度對比」、「押韻文本解構」，Agent 應主動將該論述整理成專題，存入 `wiki/synthesis/`，並反向連結至相關頁面。
+
+### 流程四：庫況審查與健康檢查 (Lint & Audit)
+定期或依使用者指令執行審查：
+- **懸空參照 (Broken/Red Links)**：檢查是否有頁面連結到尚未建立的頁面，評估是否需立項調研。
+- **史實矛盾 (Contradictions)**：檢視不同來源是否對同一歷史事件（如年代、Beef 起因）有出入，並於頁面中並列說明。
+- **孤島頁面 (Orphans)**：確認每個頁面皆有被其他頁面或 `index.md` 正確引用。
+
+---
+
+## 頁面格式規範 (Page Conventions)
+
+### 1. YAML Frontmatter 格式
+每個在 `wiki/` 下建立的頁面均須具備標準頭部：
+
+```markdown
+---
+title: 頁面中文全名 (例如: 蛋堡 Soft Lipa)
+category: entities | crews | eras | concepts | works | events | synthesis
+aliases: [杜振熙, Soft Lipa]
+tags: [饒舌歌手, 爵士嘻哈, 顏社]
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+sources:
+  - raw/20261118_kaoinc_early_history.md
+---
+```
+
+### 2. 內文結構規範
+- **定義與簡介**：精準概括其歷史地位與核心特徵（2-3 句話）。
+- **歷史演進與脈絡**：按照時間順序或生涯階段詳實記載。
+- **代表作品 / 經典戰役 / 關鍵貢獻**：列舉作品並附上連結與解析。
+- **文化考據與爭議/各方觀點**：客觀陳述爭議或演變過程。
+- **關聯條目 (References & Cross-links)**：以標準 Markdown 連結列出關聯人物、廠牌、概念。
+- **文獻來源 (Footnotes/Sources)**：明確標註引用之 raw 檔案。
+
+---
+
+## 語言與考據準則 (Scholarly & Cultural Tone)
+
+- **深諳文化黑話但不流於俗套**：準確理解並運用台饒術語（如：Punchline、Flow 變奏、雙押/排押、Cypher、Battle、Real、Beef、OG、校長、學院派），解說需深入且具文化尊重。
+- **嚴謹考證**：對重要作品發行年份、金曲/金音獲獎紀錄、節目賽事勝負等客觀數據務求精確，不憑空臆測。
