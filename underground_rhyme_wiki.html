@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>INK & SMOKE // 地下押韻嘻哈創作工具人 LLM Wiki</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;900&family=Pirata+One&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-abyss: #08080a;
+      --bg-card: #111116;
+      --bg-elevated: #181820;
+      --crimson-ink: #b91c1c;
+      --crimson-glow: #dc2626;
+      --indigo-bruise: #2563eb;
+      --indigo-deep: #1d4ed8;
+      --parchment: #e4e2dd;
+      --ash-gray: #8e8c84;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-abyss);
+      color: var(--parchment);
+      font-family: 'Noto Sans TC', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .font-tattoo {
+      font-family: 'Pirata One', 'Noto Serif TC', serif;
+      letter-spacing: 0.06em;
+    }
+
+    .font-serif-heavy {
+      font-family: 'Noto Serif TC', serif;
+    }
+
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Ambient Underground Red & Blue Moody Lighting (Not Cyberpunk Neon) */
+    .underground-aura {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 14% 18%, rgba(153, 27, 27, 0.19) 0%, rgba(153, 27, 27, 0.04) 36%, transparent 65%),
+        radial-gradient(circle at 86% 78%, rgba(30, 58, 138, 0.22) 0%, rgba(29, 78, 216, 0.05) 38%, transparent 68%),
+        radial-gradient(circle at 50% 50%, rgba(12, 12, 16, 0.4) 0%, rgba(8, 8, 10, 0.92) 100%);
+    }
+
+    /* Subtle distressed concrete / needle grain overlay */
+    .ink-grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.045;
+      background-image: radial-gradient(#ffffff 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    /* Tattoo double-line frame border */
+    .tattoo-card {
+      background: linear-gradient(165deg, rgba(22, 22, 29, 0.92) 0%, rgba(13, 13, 18, 0.96) 100%);
+      border: 1px solid rgba(228, 226, 221, 0.12);
+      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(185, 28, 28, 0.08);
+      position: relative;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tattoo-card:hover {
+      border-color: rgba(185, 28, 28, 0.45);
+      box-shadow: 0 14px 36px -6px rgba(153, 27, 27, 0.22), 0 0 25px -10px rgba(37, 99, 235, 0.2);
+    }
+
+    .tattoo-corner::before,
+    .tattoo-corner::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-color: rgba(185, 28, 28, 0.55);
+      pointer-events: none;
+    }
+    .tattoo-corner::before {
+      top: 5px;
+      left: 5px;
+      border-top: 1.5px solid rgba(185, 28, 28, 0.65);
+      border-left: 1.5px solid rgba(185, 28, 28, 0.65);
+    }
+    .tattoo-corner::after {
+      bottom: 5px;
+      right: 5px;
+      border-bottom: 1.5px solid rgba(37, 99, 235, 0.65);
+      border-right: 1.5px solid rgba(37, 99, 235, 0.65);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090c;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #272732;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #991b1b;
+    }
+
+    .crimson-pill-active {
+      background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+      color: #f5f5f4;
+      border-color: #ef4444;
+      box-shadow: 0 0 18px rgba(185, 28, 28, 0.45);
+    }
+
+    .indigo-pill-active {
+      background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+      color: #eff6ff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 18px rgba(37, 99, 235, 0.4);
+    }
+
+    @keyframes slowFloat {
+      0%, 100% { transform: translateY(0px) scale(1); opacity: 0.16; }
+      50% { transform: translateY(-10px) scale(1.03); opacity: 0.25; }
+    }
+
+    .smoke-drift {
+      animation: slowFloat 11s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="selection:bg-red-900 selection:text-stone-100">
+
+  <!-- Background Smoke Canvas & Ambient Lights -->
+  <canvas id="smokeCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-65"></canvas>
+  <div class="underground-aura"></div>
+  <div class="ink-grain"></div>
+
+  <!-- Floating Tattoo Ornamental Watermark SVGs -->
+  <div class="fixed top-16 left-6 pointer-events-none z-0 opacity-10 hidden xl:block smoke-drift">
+    <svg width="180" height="260" viewBox="0 0 180 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Old School Tattoo Dagger + Rose Linework -->
+      <path d="M90 10 L102 65 L90 245 L78 65 Z" stroke="#dc2626" stroke-width="1.5"/>
+      <path d="M45 65 C65 55, 115 55, 135 65 C115 73, 65 73, 45 65 Z" stroke="#e4e2dd" stroke-width="1.5"/>
+      <circle cx="90" cy="30" r="8" stroke="#3b82f6" stroke-width="1.5"/>
+      <path d="M60 120 C70 102, 110 102, 120 120 C110 142, 70 142, 60 120 Z" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="3 3"/>
+      <path d="M90 5 L90 255" stroke="#e4e2dd" stroke-width="0.7" opacity="0.6"/>
+    </svg>
+  </div>
+
+  <!-- Main Content Container -->
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20">
+
+    <!-- Top Underground Header with Tattoo Emblem -->
+    <header class="border-b border-stone-800/90 pb-5 mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-start sm:items-center gap-4">
+        <!-- Custom Tattoo Microphone & Smoke Skull Crest SVG -->
+        <div class="w-14 h-14 rounded-lg bg-stone-950 border border-red-900/60 flex items-center justify-center shrink-0 shadow-[0_0_25px_rgba(185,28,28,0.25)] relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-red-950/30 via-transparent to-blue-950/40"></div>
+          <svg class="w-10 h-10 relative z-10" viewBox="0 0 64 64" fill="none">
+            <!-- Crossed Tattoo Needles / Mic -->
+            <path d="M12 52 L52 12 M52 52 L12 12" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
+            <rect x="24" y="10" width="16" height="24" rx="8" fill="#09090b" stroke="#dc2626" stroke-width="2"/>
+            <path d="M24 18 H40 M24 24 H40" stroke="#e4e2dd" stroke-width="1.3"/>
+            <path d="M19 24 C19 32 25 38 32 38 C39 38 45 32 45 24" stroke="#e4e2dd" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M32 38 V54 M22 54 H42" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span class="px-2 py-0.5 text-[11px] font-mono-code uppercase tracking-widest bg-red-950/80 text-red-300 border border-red-800/60 rounded">
+              KARPATHY LLM WIKI PATTERN
+            </span>
+            <span class="px-2 py-0.5 text-[11px] font-mono-code uppercase tracking-widest bg-blue-950/70 text-blue-300 border border-blue-800/50 rounded">
+              PHONETIC-FIRST RHYME ENGINE
+            </span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-stone-100 mt-1 flex items-center gap-3">
+            <span class="font-tattoo text-3xl sm:text-4xl text-red-500 font-normal tracking-wider">INK &amp; SMOKE</span>
+            <span class="text-stone-300 font-serif-heavy text-xl sm:text-2xl">地下押韻創作工具人 Wiki</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-stone-400 mt-0.5">
+            發音咬字絕對優先 ▸ 語義意境關聯排序 ▸ 支援 1～4 字指定連押（如：<code class="text-red-400 font-mono-code">窗戶 = ang + u</code>）
+          </p>
+        </div>
+      </div>
+
+      <!-- Navigation Mode Tabs -->
+      <nav class="flex flex-wrap items-center gap-2 bg-stone-950/90 p-1.5 rounded-lg border border-stone-800">
+        <button id="tabBtnEngine" data-tab="engine" class="nav-tab-btn crimson-pill-active px-3.5 py-2 rounded text-xs sm:text-sm font-bold tracking-wide transition flex items-center gap-2">
+          <span>🔥</span> 韻腳雷達 &amp; 對韻引擎
+        </button>
+        <button id="tabBtnWiki" data-tab="wiki" class="nav-tab-btn px-3.5 py-2 rounded text-xs sm:text-sm font-bold text-stone-400 hover:text-stone-200 border border-transparent transition flex items-center gap-2">
+          <span>📓</span> LLM Wiki 知識庫瀏覽
+        </button>
+        <button id="tabBtnWorkbench" data-tab="workbench" class="nav-tab-btn px-3.5 py-2 rounded text-xs sm:text-sm font-bold text-stone-400 hover:text-stone-200 border border-transparent transition flex items-center gap-2">
+          <span>🎙️</span> 地下寫詞工作台 <span id="savedCountBadge" class="px-1.5 py-0.2 bg-blue-950 text-blue-300 border border-blue-700/60 rounded text-[11px] font-mono-code">4</span>
+        </button>
+        <button id="tabBtnLab" data-tab="lab" class="nav-tab-btn px-3.5 py-2 rounded text-xs sm:text-sm font-bold text-stone-400 hover:text-stone-200 border border-transparent transition flex items-center gap-2">
+          <span>🗡️</span> 許願池 &amp; 架構設定
+        </button>
+      </nav>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: RHYME ENGINE (韻腳雷達 & 對韻引擎) -->
+    <!-- ========================================== -->
+    <section id="view-engine" class="space-y-6">
+
+      <!-- Control Console Card -->
+      <div class="tattoo-card tattoo-corner rounded-xl p-5 sm:p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-end">
+
+          <!-- Input Target Word -->
+          <div class="lg:col-span-5">
+            <label for="rhymeInput" class="block text-xs font-mono-code uppercase tracking-wider text-stone-400 mb-2 flex items-center justify-between">
+              <span>1. 輸入你想押的詞 (TARGET WORD)</span>
+              <span class="text-red-400 font-bold">★ 發音/韻母鏈最優先</span>
+            </label>
+            <div class="relative">
+              <input
+                id="rhymeInput"
+                type="text"
+                value="窗戶"
+                placeholder="例如：窗戶、地下道、呼吸、末班車、威士忌..."
+                class="w-full bg-stone-950/95 border-2 border-stone-700/90 focus:border-red-600 rounded-lg px-4 py-3 text-lg sm:text-xl font-bold text-stone-100 placeholder-stone-600 focus:outline-none transition shadow-inner"
+              />
+              <button
+                id="analyzeBtn"
+                class="absolute right-2 top-2 bottom-2 px-4 bg-gradient-to-r from-red-800 to-red-900 hover:from-red-700 hover:to-red-800 text-stone-100 font-bold text-xs sm:text-sm rounded border border-red-500/50 transition shadow-md"
+              >
+                拆解對韻 ↵
+              </button>
+            </div>
+
+            <!-- Preset Quick Chips -->
+            <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+              <span class="text-[11px] text-stone-500 mr-1">快速試玩範例：</span>
+              <button data-preset="窗戶" data-syl="2" class="preset-chip text-xs px-2.5 py-1 rounded bg-red-950/60 text-red-200 border border-red-800/60 hover:bg-red-900/70 transition">
+                窗戶 (ang + u · 2字)
+              </button>
+              <button data-preset="地下道" data-syl="3" class="preset-chip text-xs px-2.5 py-1 rounded bg-stone-900 text-stone-300 border border-stone-700/70 hover:border-red-700 transition">
+                地下道 (i + ia + ao · 3字)
+              </button>
+              <button data-preset="煙霧" data-syl="2" class="preset-chip text-xs px-2.5 py-1 rounded bg-stone-900 text-stone-300 border border-stone-700/70 hover:border-red-700 transition">
+                煙霧 (ian + u · 2字)
+              </button>
+              <button data-preset="刺青" data-syl="2" class="preset-chip text-xs px-2.5 py-1 rounded bg-stone-900 text-stone-300 border border-stone-700/70 hover:border-red-700 transition">
+                刺青 (i + ing · 2字)
+              </button>
+              <button data-preset="威士忌" data-syl="3" class="preset-chip text-xs px-2.5 py-1 rounded bg-stone-900 text-stone-300 border border-stone-700/70 hover:border-red-700 transition">
+                威士忌 (ei + i + i · 3字)
+              </button>
+              <button data-preset="打開窗戶" data-syl="4" class="preset-chip text-xs px-2.5 py-1 rounded bg-stone-900 text-stone-300 border border-stone-700/70 hover:border-red-700 transition">
+                打開窗戶 (a+ai+ang+u · 4字)
+              </button>
+            </div>
+          </div>
+
+          <!-- N-Syllable Count Selector -->
+          <div class="lg:col-span-4">
+            <label class="block text-xs font-mono-code uppercase tracking-wider text-stone-400 mb-2 flex items-center justify-between">
+              <span>2. 指定要押幾個字 (SYLLABLE LOCK)</span>
+              <span id="syllableHintLabel" class="text-blue-400 font-mono-code">鎖定 2 字雙押</span>
+            </label>
+            <div class="grid grid-cols-4 gap-2" id="syllableSelectorGroup">
+              <button data-syl="1" class="syl-btn py-2.5 px-2 rounded-lg border border-stone-800 bg-stone-950 text-stone-400 hover:text-stone-200 font-bold text-xs sm:text-sm transition flex flex-col items-center">
+                <span>單押</span>
+                <span class="text-[10px] font-mono-code opacity-75">1 字尾韻</span>
+              </button>
+              <button data-syl="2" class="syl-btn crimson-pill-active py-2.5 px-2 rounded-lg border font-bold text-xs sm:text-sm transition flex flex-col items-center">
+                <span>雙押</span>
+                <span class="text-[10px] font-mono-code opacity-90">2 字對齊</span>
+              </button>
+              <button data-syl="3" class="syl-btn py-2.5 px-2 rounded-lg border border-stone-800 bg-stone-950 text-stone-400 hover:text-stone-200 font-bold text-xs sm:text-sm transition flex flex-col items-center">
+                <span>三押</span>
+                <span class="text-[10px] font-mono-code opacity-75">3 字連擊</span>
+              </button>
+              <button data-syl="4" class="syl-btn py-2.5 px-2 rounded-lg border border-stone-800 bg-stone-950 text-stone-400 hover:text-stone-200 font-bold text-xs sm:text-sm transition flex flex-col items-center">
+                <span>四押+</span>
+                <span class="text-[10px] font-mono-code opacity-75">4 字成句</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Semantic Context / Vibe Filter & Slant Toggle -->
+          <div class="lg:col-span-3 space-y-2.5">
+            <div>
+              <label for="vibeFilter" class="block text-xs font-mono-code uppercase tracking-wider text-stone-400 mb-1.5">
+                3. 語義意境偏好 (次要排序加分)
+              </label>
+              <select
+                id="vibeFilter"
+                class="w-full bg-stone-950 border border-stone-700 rounded-lg px-3 py-2.5 text-xs sm:text-sm text-stone-200 focus:outline-none focus:border-blue-500"
+              >
+                <option value="all">⚡ 全部顯示（按語義關聯度分級）</option>
+                <option value="related">🔥 優先看「意思/意境有相關」</option>
+                <option value="street">🚬 地下煙霧 / 街頭暗巷 / 刺青</option>
+                <option value="battle">🗡️ 硬核態度 / Battle 攻擊 / 炫技</option>
+                <option value="jump">🎲 純發音對齊（無關語義跳押）</option>
+              </select>
+            </div>
+
+            <label class="flex items-center justify-between px-3 py-1.5 rounded bg-stone-950/90 border border-stone-800 cursor-pointer">
+              <span class="text-xs text-stone-300">包含台灣口語近音通押 (<code class="text-blue-400 font-mono-code">an/ang, en/eng</code>)</span>
+              <input id="slantToggle" type="checkbox" checked class="accent-red-600 w-4 h-4 rounded cursor-pointer" />
+            </label>
+          </div>
+
+        </div>
+
+        <!-- Phonetic Breakdown X-Ray Bar -->
+        <div class="mt-5 pt-4 border-t border-stone-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-stone-950/70 p-3.5 rounded-lg border border-stone-800/60">
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-xs font-mono-code uppercase px-2 py-1 rounded bg-stone-900 text-stone-400 border border-stone-700">
+              聲學拆解 X-RAY
+            </span>
+            <div id="phoneticBreakdownDisplay" class="flex flex-wrap items-center gap-2">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          <div class="flex items-center gap-3 text-xs text-stone-400">
+            <span>匹配規則：<strong class="text-red-400">1. 發音韻母鏈吻合</strong> ➔ <strong class="text-blue-400">2. 語義相關優先排前面</strong> ➔ <strong class="text-stone-300">3. 無關詞彙亦保留激發靈感</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rhyme Results Grid (3 Priority Tiers) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5" id="rhymeTiersContainer">
+        <!-- Populated dynamically via JS -->
+      </div>
+
+      <!-- Instant Underground Bar Generator & Preview Strip -->
+      <div class="tattoo-card rounded-xl p-5 border-l-4 border-l-red-700">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-red-500 font-tattoo text-xl">INKED BARS //</span>
+            <h3 class="text-sm sm:text-base font-bold text-stone-100">實戰造句示範（點擊上方任一韻腳卡可自動帶入寫詞台或複製）</h3>
+          </div>
+          <span id="activeTargetSummary" class="text-xs font-mono-code text-stone-400">目標詞：窗戶 (ang + u)</span>
+        </div>
+        <div id="sampleBarsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: LLM WIKI BROWSER (知識庫瀏覽與同步) -->
+    <!-- ========================================== -->
+    <section id="view-wiki" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left Sidebar: Wiki Tree & Karpathy Architecture -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="tattoo-card rounded-xl p-4">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-3 mb-3">
+              <div>
+                <h3 class="font-bold text-stone-100 text-sm">📂 Karpathy 三層 Wiki 結構</h3>
+                <p class="text-[11px] text-stone-400">點擊節點即時檢視 Markdown 原稿</p>
+              </div>
+              <span class="text-[11px] font-mono-code px-2 py-0.5 bg-red-950/80 text-red-300 border border-red-800/50 rounded">12 Pages</span>
+            </div>
+
+            <div id="wikiFileList" class="space-y-1.5 max-h-[480px] overflow-y-auto pr-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Quick Ingest Simulator into Wiki -->
+          <div class="tattoo-card rounded-xl p-4 border border-blue-900/40">
+            <h4 class="text-xs font-mono-code uppercase tracking-wider text-blue-400 mb-2">
+              ⚡ 快速丟入新韻群入庫 (INGEST TO WIKI)
+            </h4>
+            <p class="text-xs text-stone-400 mb-3">
+              把你在對韻引擎找到的好詞或自己想到的雙押直接寫進 <code class="text-stone-200">wiki/rhyme_vault/</code> 並自動紀錄到 <code class="text-stone-200">log.md</code>：
+            </p>
+            <div class="space-y-2">
+              <input id="quickIngestTitle" type="text" placeholder="韻群或筆記標題（例：窗戶 ang+u 雙押擴充）" class="w-full bg-stone-950 border border-stone-800 rounded px-3 py-2 text-xs text-stone-100" />
+              <textarea id="quickIngestBody" rows="3" placeholder="輸入歌詞碎片或韻腳組合..." class="w-full bg-stone-950 border border-stone-800 rounded px-3 py-2 text-xs text-stone-100"></textarea>
+              <button id="quickIngestBtn" class="w-full py-2 bg-blue-900/80 hover:bg-blue-800 text-blue-100 font-bold text-xs rounded border border-blue-600/50 transition">
+                + 執行 Ingest 寫入 Wiki 與 Log.md
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Viewer: Rendered Wiki Markdown Content -->
+        <div class="lg:col-span-8">
+          <div class="tattoo-card tattoo-corner rounded-xl p-5 sm:p-6 min-h-[540px] flex flex-col justify-between">
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800 pb-3 mb-4">
+                <div>
+                  <span id="wikiViewerPath" class="text-xs font-mono-code text-red-400">AGENTS.md</span>
+                  <h2 id="wikiViewerTitle" class="text-lg sm:text-xl font-bold text-stone-100 mt-0.5">AGENTS.md — 押韻嘻哈創作工具人維護規範</h2>
+                </div>
+                <button id="copyWikiPageBtn" class="px-3 py-1.5 rounded bg-stone-900 hover:bg-stone-800 text-xs font-mono-code text-stone-300 border border-stone-700 transition">
+                  📋 複製 Markdown
+                </button>
+              </div>
+              <pre id="wikiViewerContent" class="whitespace-pre-wrap text-xs sm:text-sm leading-relaxed text-stone-300 font-mono-code bg-stone-950/80 p-4 rounded-lg border border-stone-800/90 max-h-[520px] overflow-y-auto"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: UNDERGROUND WORKBENCH (寫詞工作台) -->
+    <!-- ========================================== -->
+    <section id="view-workbench" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left: Collected Rhyme Bag & BPM Metronome -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="tattoo-card rounded-xl p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-stone-100 text-sm sm:text-base flex items-center gap-2">
+                <span>🩸</span> 已釘選的韻腳彈匣 (Pinned Rhymes)
+              </h3>
+              <button id="clearBagBtn" class="text-xs text-stone-500 hover:text-red-400 transition">清空彈匣</button>
+            </div>
+            <p class="text-xs text-stone-400 mb-3">點擊下方任一韻腳即可直接插入右側正在寫的歌詞游標處：</p>
+            <div id="pinnedRhymesList" class="flex flex-wrap gap-2">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Underground Boom Bap Pulse Metronome (Web Audio API) -->
+          <div class="tattoo-card rounded-xl p-5 border border-red-900/40">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="font-bold text-stone-100 text-sm">🥁 地下室節拍器 (Boom Bap / Trap Pulse)</h3>
+                <p class="text-[11px] text-stone-400">邊聽鼓點邊測試剛剛挑出的雙押/三押會不會卡拍</p>
+              </div>
+              <span id="bpmValueDisplay" class="font-mono-code text-lg font-bold text-red-400">90 BPM</span>
+            </div>
+            <input id="bpmSlider" type="range" min="70" max="150" value="90" class="w-full accent-red-600 mb-3 cursor-pointer" />
+            <div class="flex items-center gap-2">
+              <button id="toggleBeatBtn" class="flex-1 py-2.5 rounded bg-red-900/80 hover:bg-red-800 text-stone-100 font-bold text-xs border border-red-500/50 transition">
+                ▶ 啟動 90 BPM 地下鼓點預覽
+              </button>
+              <div id="beatLights" class="flex items-center gap-1.5 px-3 py-2 bg-stone-950 rounded border border-stone-800">
+                <span class="beat-dot w-2.5 h-2.5 rounded-full bg-stone-700"></span>
+                <span class="beat-dot w-2.5 h-2.5 rounded-full bg-stone-700"></span>
+                <span class="beat-dot w-2.5 h-2.5 rounded-full bg-stone-700"></span>
+                <span class="beat-dot w-2.5 h-2.5 rounded-full bg-stone-700"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: 16-Bar Lyric Pad -->
+        <div class="lg:col-span-7">
+          <div class="tattoo-card tattoo-corner rounded-xl p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div>
+                <h3 class="font-bold text-stone-100 text-base">✍️ 16 Bars 歌詞草稿工作台 (`wiki/drafts_workbench/`)</h3>
+                <p class="text-xs text-stone-400">支援拍線 <code class="text-red-400">|</code>、換氣符號 <code class="text-blue-400">^</code> 與小節結尾 <code class="text-stone-200">/</code></p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button id="saveDraftToWikiBtn" class="px-3 py-1.5 rounded bg-red-900/80 hover:bg-red-800 text-xs font-bold text-stone-100 border border-red-600/50 transition">
+                  💾 寫回 Wiki 草稿庫
+                </button>
+                <button id="copyDraftBtn" class="px-3 py-1.5 rounded bg-stone-900 hover:bg-stone-800 text-xs text-stone-300 border border-stone-700 transition">
+                  複製歌詞
+                </button>
+              </div>
+            </div>
+
+            <textarea
+              id="lyricPadTextarea"
+              rows="12"
+              class="w-full bg-stone-950/95 border border-stone-800 focus:border-red-700 rounded-lg p-4 text-sm sm:text-base font-mono-code text-stone-100 leading-relaxed focus:outline-none"
+            >[Bar 01] 推開斑駁的【窗戶】(ang+u) | 看著街對面荒廢的【倉庫】(ang+u) ^ /
+[Bar 02] 吐出一口藍紅色的【香霧】(ang+u) | 沒人光顧的房間我獨自【常駐】(ang+u) ^ /
+[Bar 03] 走進空蕩的【地下道】(i+ia+ao) | 牆壁上誰留下的【記號標】(i+ao+iao) /
+[Bar 04] 耳機裡的鼓點像【武士刀】出鞘 ^ | 把白天的壓抑全部都咆哮 /</textarea>
+
+            <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-stone-400">
+              <span id="barCounterInfo">目前行數：4 行 ｜ 偵測到雙押/三押標記：6 處</span>
+              <span>提示：寫完後點「寫回 Wiki 草稿庫」即可永久保存在知識庫中</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: CO-DESIGN WISHLIST (許願與進階擴充) -->
+    <!-- ========================================== -->
+    <section id="view-lab" class="hidden space-y-6">
+      <div class="tattoo-card tattoo-corner rounded-xl p-6">
+        <div class="border-b border-stone-800 pb-4 mb-5">
+          <span class="text-xs font-mono-code uppercase text-red-400 tracking-widest">NEXT EVOLUTION // 共同打造你的專屬地下武器</span>
+          <h2 class="text-xl sm:text-2xl font-bold text-stone-100 mt-1">
+            除了「發音優先＋語義排序＋指定字數對韻」，你覺得還可以加什麼？
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-400 mt-1">
+            你可以直接勾選下方任何你有興趣的進階模組預覽效果，或在對話框直接告訴我你的想法，我馬上幫你寫進系統裡：
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="featureWishlistGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden px-4 py-3 rounded-lg bg-stone-900/95 border border-red-600/80 text-stone-100 text-xs sm:text-sm font-bold shadow-2xl flex items-center gap-2">
+    <span class="text-red-500">🔥</span>
+    <span id="toastMessage">已加入韻腳彈匣！</span>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. PHONETIC & RHYME KNOWLEDGE DATABASE (發音優先 + 語義關聯 + 1~4字對齊)
+    // =========================================================================
+
+    // Character-level Mandarin Pinyin + Rhyme Group lookup for real-time decomposition
+    const CHAR_PHONETICS = {
+      '窗': { py: 'chuāng', vowel: 'ang', tone: 1, group: '江陽轍 (ang/iang/uang)' },
+      '戶': { py: 'hù', vowel: 'u', tone: 4, group: '姑蘇轍 (u)' },
+      '開': { py: 'kāi', vowel: 'ai', tone: 1, group: '懷來轍 (ai/uai)' },
+      '打': { py: 'dǎ', vowel: 'a', tone: 3, group: '發花轍 (a/ia/ua)' },
+      '地': { py: 'dì', vowel: 'i', tone: 4, group: '一七轍 (i/ü)' },
+      '下': { py: 'xià', vowel: 'ia', tone: 4, group: '發花轍 (a/ia/ua)' },
+      '道': { py: 'dào', vowel: 'ao', tone: 4, group: '遙條轍 (ao/iao)' },
+      '煙': { py: 'yān', vowel: 'ian', tone: 1, group: '言前轍 (an/ian/uan)' },
+      '霧': { py: 'wù', vowel: 'u', tone: 4, group: '姑蘇轍 (u)' },
+      '刺': { py: 'cì', vowel: 'i', tone: 4, group: '一七轍 (i/整體認讀)' },
+      '青': { py: 'qīng', vowel: 'ing', tone: 1, group: '中東轍 (eng/ing/ong)' },
+      '威': { py: 'wēi', vowel: 'ei', tone: 1, group: '飛灰轍 (ei/ui)' },
+      '士': { py: 'shì', vowel: 'i', tone: 4, group: '一七轍 (i)' },
+      '忌': { py: 'jì', vowel: 'i', tone: 4, group: '一七轍 (i)' },
+      '呼': { py: 'hū', vowel: 'u', tone: 1, group: '姑蘇轍 (u)' },
+      '吸': { py: 'xī', vowel: 'i', tone: 1, group: '一七轍 (i)' },
+      '街': { py: 'jiē', vowel: 'ie', tone: 1, group: '乜斜轍 (ie/üe)' },
+      '頭': { py: 'tóu', vowel: 'ou', tone: 2, group: '由求轍 (ou/iu)' },
+      '靈': { py: 'líng', vowel: 'ing', tone: 2, group: '中東轍 (eng/ing/ong)' },
+      '魂': { py: 'hún', vowel: 'un', tone: 2, group: '人辰轍 (en/in/un)' }
+    };
+
+    // Comprehensive Rhyme Dictionary keyed by Preset / Target Word + Syllable Count (1, 2, 3, 4)
+    const RHYME_VAULT_DB = {
+      '窗戶': {
+        chainLabel: 'chuāng hù ➔ 韻母鏈 [ang] + [u]',
+        coreVowels: ['ang', 'u'],
+        bySyllable: {
+          1: {
+            ruleNote: '單字尾韻鎖定：[-u]（姑蘇轍）',
+            tier1_semantic: [
+              { word: '迷霧', py: 'mí wù', match: '100% [-u]', vibe: 'street', reason: '窗外瀰漫的深夜迷霧', bar: '推開生鏽的窗戶，看著巷口散不去的迷霧' },
+              { word: '孤獨', py: 'gū dú', match: '100% [-u]', vibe: 'related', reason: '獨自一人在窗邊的孤獨感', bar: '關上房間的窗戶，把整座城市的孤獨鎖在深處' },
+              { word: '夜幕', py: 'yè mù', match: '100% [-u]', vibe: 'related', reason: '窗外降下的黑色夜幕', bar: '隔著冰冷的窗戶，凝視剛垂下的黑色夜幕' },
+              { word: '麻木', py: 'má mù', match: '100% [-u]', vibe: 'street', reason: '地下生活的壓抑與麻木', bar: '盯著對街的窗戶，抽到肺部都開始麻木' }
+            ],
+            tier2_phonetic: [
+              { word: '殘酷', py: 'cán kù', match: '100% [-u]', vibe: 'battle', reason: '尾音與去聲聲調完全一致', bar: '現實比鐵窗還殘酷，沒人能替你開這扇窗戶' },
+              { word: '程度', py: 'chéng dù', match: '100% [-u]', vibe: 'jump', reason: '純發音對齊，適合轉折', bar: '歌詞狠到這種程度，震碎你家隔音的窗戶' },
+              { word: '領悟', py: 'lǐng wù', match: '100% [-u]', vibe: 'jump', reason: '尾音 -u 飽滿共鳴', bar: '在凌晨四點的窗戶，寫下沒人懂的領悟' },
+              { word: '憤怒', py: 'fèn nù', match: '100% [-u]', vibe: 'battle', reason: '適合重拍收尾', bar: '把壓抑的憤怒，全部砸向封死的窗戶' }
+            ],
+            tier3_slant: [
+              { word: 'Blue (憂鬱藍)', py: 'blū', match: '中英混押 [-u]', vibe: 'street', reason: '英文 Blue 與「戶 (u)」完美接軌', bar: '打開地下室的窗戶，耳機裡放著最暗的 Blue' }
+            ]
+          },
+          2: {
+            ruleNote: '雙字精準鎖定：[ang / uang / iang] + [u]（江陽＋姑蘇雙押）',
+            tier1_semantic: [
+              { word: '香霧', py: 'xiāng wù', match: '100% [ang + u]', vibe: 'street', reason: '窗邊吐出的菸草香霧，畫面直接連貫', bar: '推開頂樓的窗戶，吐出一口藍紅交錯的香霧' },
+              { word: '荒蕪', py: 'huāng wú', match: '100% [uang + u]', vibe: 'related', reason: '介音 u 與韻母 ang+u 完全吻合！描寫窗外荒涼景色', bar: '隔著起霧的窗戶，看著這座城市半夜的荒蕪' },
+              { word: '雙目', py: 'shuāng mù', match: '100% [uang + u]', vibe: 'related', reason: '連捲舌聲母 sh/ch 與介音 uang+u 都 100% 對齊！', bar: '貼著冰冷的窗戶，血絲佈滿熬夜寫詞的雙目' },
+              { word: '倉庫', py: 'cāng kù', match: '100% [ang + u]', vibe: 'street', reason: '地下室、鐵皮倉庫與窗戶同屬空間建築意象', bar: '沒有窗戶的地下倉庫，是我們磨利韻腳的兵工廠' },
+              { word: '當舖', py: 'dàng pù', match: '100% [ang + u]', vibe: 'street', reason: '老街地下當舖霓虹燈，極具 Underground 畫面感', bar: '從窄小的窗戶看出去，對街只剩閃著紅光的當舖' },
+              { word: '常駐', py: 'cháng zhù', match: '100% [ang + u]', vibe: 'related', reason: '捲舌 ch + ang + u 咬字極順，形容孤獨常駐窗前', bar: '沒有陽光進來的窗戶，只有失眠跟菸蒂在這裡常駐' }
+            ],
+            tier2_phonetic: [
+              { word: '光顧', py: 'guāng gù', match: '100% [uang + u]', vibe: 'battle', reason: 'uang+u 完全同韻母鏈，適合寫孤傲態度', bar: '鎖上房間的窗戶，我的內心世界不需要外人光顧' },
+              { word: '商務', py: 'shāng wù', match: '100% [ang + u]', vibe: 'battle', reason: '你提到的經典範例！ang+u 咬字極緊，可做地下 vs 商業對比', bar: '坐在地下室看著半截窗戶，我們玩純的從不搞虛偽商務' },
+              { word: '航路', py: 'háng lù', match: '100% [ang + u]', vibe: 'jump', reason: '發音飽滿，可延伸為人生方向與迷航', bar: '把小房間的窗戶當作觀景窗，在黑夜裡劃出自己的航路' },
+              { word: '帳戶', py: 'zhàng hù', match: '100% [ang + u]', vibe: 'battle', reason: '尾字同為「戶」，可做雙關對比', bar: '就算銀行帳戶還沒暴富，看出去的窗戶視野照樣寬闊' },
+              { word: '強渡', py: 'qiáng dù', match: '100% [iang + u]', vibe: 'jump', reason: '語義無關但聲學鏗鏘有力', bar: '敲碎封死的窗戶，這場暴風雨我們選擇強渡' },
+              { word: '匡扶', py: 'kuāng fú', match: '100% [uang + u]', vibe: 'jump', reason: 'uang+u 完全對齊，適合江湖/武俠風 Punchline', bar: '冷風灌進窗戶，拿起麥克風像在亂世裡匡扶' }
+            ],
+            tier3_slant: [
+              { word: '煙霧', py: 'yān wù', match: '口語通押 [ian≈ang + u]', vibe: 'street', reason: '台灣口語 an/ang 鼻音通押，地下煙霧氛圍極強', bar: '半開的窗戶，散不掉滿屋子刺青藥水與深色煙霧' },
+              { word: '山路', py: 'shān lù', match: '口語通押 [an≈ang + u]', vibe: 'street', reason: 'sh/ch 捲舌搭配 an/ang 通押，聽感極為自然', bar: '車窗當作移動的窗戶，凌晨三點獨自開上沒有路燈的山路' },
+              { word: '生路', py: 'shēng lù', match: '口語通押 [eng≈ang + u]', vibe: 'battle', reason: '後鼻音 eng 與 ang 共鳴位置相近', bar: '就算上帝關了門還封死窗戶，我的韻腳自己劈開一條生路' }
+            ]
+          },
+          3: {
+            ruleNote: '三字連擊鎖定：（自動補齊動賓結構如「開窗戶」[ai + ang + u] 或「舊窗戶」[iu + ang + u]）',
+            tier1_semantic: [
+              { word: '太荒蕪', py: 'tài huāng wú', match: '100% [ai + uang + u]', vibe: 'related', reason: '完美對齊「開窗戶 (kāi chuāng hù)」三字韻母鏈！', bar: '半夜起來【開窗戶】，外面的街道冷清得【太荒蕪】' },
+              { word: '在倉庫', py: 'zài cāng kù', match: '100% [ai + ang + u]', vibe: 'street', reason: 'ai + ang + u 三音節嚴絲合縫，地下練團室場景', bar: '別再悶著不【開窗戶】，我們的秘密基地就藏【在倉庫】' },
+              { word: '白煙霧', py: 'bái yān wù', match: '通押 [ai + ian≈ang + u]', vibe: 'street', reason: '開窗＋白煙霧，極致 Underground 視覺畫面', bar: '手指推【開窗戶】，看著月光穿過吐出的【白煙霧】' }
+            ],
+            tier2_phonetic: [
+              { word: '賣當舖', py: 'mài dàng pù', match: '100% [ai + ang + u]', vibe: 'street', reason: '三字平仄與母音完全咬合', bar: '窮到差點把傢俱【賣當舖】，還是捨不得關上寫歌的【舊窗戶】' },
+              { word: '談商務', py: 'tán shāng wù', match: '通押 [an + ang + u]', vibe: 'battle', reason: '適合 Diss 商業饒舌的轉折句', bar: '他們在落地窗前【談商務】，我們在鐵皮屋頂推【開窗戶】' },
+              { word: '沒光顧', py: 'méi guāng gù', match: '100% [ei + uang + u]', vibe: 'jump', reason: '對齊「沒窗戶 / 推窗戶 (ei + uang + u)」', bar: '暗巷裡那間老店【沒光顧】，就像地下室封死【沒窗戶】' }
+            ],
+            tier3_slant: [
+              { word: 'Night & Blue', py: 'nait ænd blū', match: '中英三押 [ai + an + u]', vibe: 'street', reason: 'Night (ai) + and (an≈ang) + Blue (u) 跨語言三押「開窗戶」', bar: '凌晨三點推【開窗戶】，整座城市只剩下【Night and Blue】' }
+            ]
+          },
+          4: {
+            ruleNote: '四字成句鎖定：對齊「打開窗戶」[a + ai + ang + u] 四音節連擊',
+            tier1_semantic: [
+              { word: '大開倉庫', py: 'dà kāi cāng kù', match: '100% [a + ai + ang + u]', vibe: 'street', reason: '四個字聲母與韻母幾乎鏡像對稱！', bar: '凌晨四點【打開窗戶】，地下軍火庫現在【大開倉庫】' },
+              { word: '散開香霧', py: 'sàn kāi xiāng wù', match: '近音 [an + ai + ang + u]', vibe: 'street', reason: '打開窗戶＋散開香霧，動作與畫面完美因果連貫', bar: '伸手慢慢【打開窗戶】，讓房間裡的苦悶隨風【散開香霧】' }
+            ],
+            tier2_phonetic: [
+              { word: '踏入荒蕪', py: 'tà rù huāng wú', match: '跳押 [a + u + uang + u]', vibe: 'related', reason: '頭尾雙字強押，極具史詩滄桑感', bar: '從窄小的房間【打開窗戶】，雙腳準備好【踏入荒蕪】' },
+              { word: '拿來當舖', py: 'ná lái dàng pù', match: '100% [a + ai + ang + u]', vibe: 'battle', reason: 'a + ai + ang + u 四音節精準對位', bar: '別把靈魂【拿來當舖】，不如轉身推開那扇【打開窗戶】' }
+            ],
+            tier3_slant: [
+              { word: '放開束縛', py: 'fàng kāi shù fú', match: '交錯押 [ang + ai + u + u]', vibe: 'battle', reason: '將 ang+ai 與 u 對調形成迴旋四押（Chiasmus Rhyme）', bar: '現在就去【打開窗戶】，把身上的鐵鍊全部【放開束縛】' }
+            ]
+          }
+        }
+      },
+
+      '地下道': {
+        chainLabel: 'dì xià dào ➔ 韻母鏈 [i] + [ia] + [ao]',
+        coreVowels: ['i', 'ia', 'ao'],
+        bySyllable: {
+          1: {
+            ruleNote: '單字尾韻鎖定：[-ao / -iao]（遙條轍）',
+            tier1_semantic: [
+              { word: '咆哮', py: 'páo xiào', match: '100% [-ao]', vibe: 'street', reason: '地下道的回音與怒吼', bar: '走進潮濕的地下道，聽見靈魂深處的咆哮' },
+              { word: '隧道', py: 'suì dào', match: '100% [-ao]', vibe: 'related', reason: '空間感直接相連', bar: '穿過沒有盡頭的地下道，像走進時間靜止的隧道' }
+            ],
+            tier2_phonetic: [
+              { word: '出鞘', py: 'chū qiào', match: '100% [-iao]', vibe: 'battle', reason: '經典鋒利韻腳', bar: '在最黑的地下道，把藏了三年的韻腳出鞘' }
+            ],
+            tier3_slant: [
+              { word: 'Low-key 調', py: 'lōu kī diào', match: '中英混押 [-ao]', vibe: 'street', reason: '地下低調態度', bar: '習慣走冷清的地下道，保持我們一貫的 Low-key 調' }
+            ]
+          },
+          2: {
+            ruleNote: '雙字鎖定：[-ia/-a] + [-ao/-iao] 或 [-i] + [-ao]',
+            tier1_semantic: [
+              { word: '記號', py: 'jì hào', match: '跳押 [i + ao]', vibe: 'street', reason: '地下道牆上的塗鴉與刺青記號', bar: '空蕩的地下道，牆上留著我們去年噴漆的記號' },
+              { word: '街道', py: 'jiē dào', match: '近音 [ie + ao]', vibe: 'related', reason: '地上街道 vs 地下道對比', bar: '比起霓虹閃爍的街道，我更習慣待在安靜的地下道' }
+            ],
+            tier2_phonetic: [
+              { word: '大砲', py: 'dà pào', match: '100% [a + ao]', vibe: 'battle', reason: '對齊後兩字「下道 (xià dào)」', bar: '把音響搬進地下道，每一顆大鼓都像重型大砲' },
+              { word: '駕到', py: 'jià dào', match: '100% [ia + ao]', vibe: 'battle', reason: 'ia + ao 完全同音，氣場強', bar: '從最底層的地下道，一路殺進決賽宣告王者駕到' }
+            ],
+            tier3_slant: [
+              { word: '暗號', py: 'àn hào', match: '口語通押 [an + ao]', vibe: 'street', reason: '地下接頭暗號', bar: '在午夜的地下道，交換只有圈內人才懂的暗號' }
+            ]
+          },
+          3: {
+            ruleNote: '三字連擊鎖定：[i/u] + [ia/i] + [ao/iao]（三韻黃金組合）',
+            tier1_semantic: [
+              { word: '記號標', py: 'jì hào biāo', match: '100% [i + ao + iao]', vibe: 'street', reason: '塗鴉記號與地下道場景完美契合', bar: '走過空蕩的【地下道】，水泥牆上留著我們的【記號標】' },
+              { word: '止痛藥', py: 'zhǐ tòng yào', match: '三韻 [i + ong + yao]', vibe: 'street', reason: '深夜苦悶與音樂作為止痛藥', bar: '耳機裡的 Beat 是唯一的【止痛藥】，陪我穿過冰冷的【地下道】' },
+              { word: '沒依靠', py: 'méi yī kào', match: '三韻 [ei + i + ao]', vibe: 'related', reason: '白手起家的地下孤獨感', bar: '背後從來【沒依靠】，一個人背著吉他走過【地下道】' }
+            ],
+            tier2_phonetic: [
+              { word: '武士刀', py: 'wǔ shì dāo', match: '三韻 [u + i + ao]', vibe: 'battle', reason: '節奏感極強的三字名詞對仗', bar: '在陰暗的【地下道】，把麥克風磨得像把【武士刀】' },
+              { word: '開大招', py: 'kāi dà zhāo', match: '近音 [ai + a + ao]', vibe: 'battle', reason: '後兩字 a+ao 完全對齊「下道」', bar: '不用等到上台才【開大招】，光在【地下道】Freestyle 就讓你招架不住' },
+              { word: '微微笑', py: 'wēi wēi xiào', match: '三韻 [ei + ei + iao]', vibe: 'jump', reason: '冷靜反差感', bar: '走出潮濕的【地下道】，看著刺眼的陽光我只是【微微笑】' }
+            ],
+            tier3_slant: [
+              { word: 'Beat 抓牢', py: 'bīt zhuā láo', match: '中英三押 [i + ua + ao]', vibe: 'street', reason: 'Beat (i) + 抓 (ua≈ia) + 牢 (ao) 完美對齊地下道！', bar: '就算困在【地下道】，只要把這顆【Beat 抓牢】就能翻身' }
+            ]
+          },
+          4: {
+            ruleNote: '四字連擊鎖定：對齊「走地下道 / 在地下道」四音節結構',
+            tier1_semantic: [
+              { word: '沒人看到', py: 'méi rén kàn dào', match: '四押尾強押', vibe: 'street', reason: '地下默默耕耘的真實寫照', bar: '那些在深夜【走地下道】的日子，流過的汗水從來【沒人看到】' }
+            ],
+            tier2_phonetic: [
+              { word: '全副武裝', py: 'quán fù wǔ zhuāng', match: '轉韻蓄力', vibe: 'battle', reason: '適合第 3 小節鋪墊轉韻', bar: '穿過【在地下道】的漫長黑夜，站上地面我們已經靈魂出竅' }
+            ],
+            tier3_slant: [
+              { word: '靈魂出竅', py: 'líng hún chū qiào', match: '三四字強押 [iao]', vibe: 'street', reason: '重拍鼓點讓人靈魂出竅', bar: '耳機開到最大【走地下道】，那顆 808 震得我【靈魂出竅】' }
+            ]
+          }
+        }
+      },
+
+      '煙霧': {
+        chainLabel: 'yān wù ➔ 韻母鏈 [ian / an] + [u]',
+        coreVowels: ['ian', 'u'],
+        bySyllable: {
+          1: {
+            ruleNote: '單字尾韻鎖定：[-u]',
+            tier1_semantic: [
+              { word: '迷路', py: 'mí lù', match: '100% [-u]', vibe: 'street', reason: '在煙霧中迷路，意境直接連貫', bar: '吐出濃白色的煙霧，在記憶的暗巷裡假裝迷路' }
+            ],
+            tier2_phonetic: [
+              { word: '停駐', py: 'tíng zhù', match: '100% [-u]', vibe: 'related', reason: '煙霧停駐在空中', bar: '看著天花板盤旋的煙霧，時間好像在這一刻停駐' }
+            ],
+            tier3_slant: [
+              { word: 'Tattoo (刺青)', py: 'tæ tū', match: '中英混押 [-u]', vibe: 'street', reason: '你指定的 Smoke + Tattoo 完美結合！Tattoo 尾音正是 [-u]', bar: '穿過藍紅色的煙霧，露出手臂上剛刺好的黑色 Tattoo' }
+            ]
+          },
+          2: {
+            ruleNote: '雙字鎖定：[ian / an / uan] + [u]（言前＋姑蘇雙押）',
+            tier1_semantic: [
+              { word: '厭惡', py: 'yàn wù', match: '100% [ian + u]', vibe: 'street', reason: '與「煙霧 (yān wù)」完全同音異調！地下厭世態度首選雙關', bar: '吐出一口濃烈的【煙霧】，遮住我對這個虛偽世界的【厭惡】' },
+              { word: '山路', py: 'shān lù', match: '100% [an + u]', vibe: 'street', reason: '深夜山路與嵐霧意境契合', bar: '車頭燈切開凌晨的【煙霧】，一個人開著沒有盡頭的【山路】' },
+              { word: '殘酷', py: 'cán kù', match: '100% [an + u]', vibe: 'battle', reason: 'an + u 完美咬合，地下寫實感強', bar: '在繚繞的【煙霧】背後，藏著街頭最赤裸的【殘酷】' },
+              { word: '建築', py: 'jiàn zhù', match: '100% [ian + u]', vibe: 'related', reason: 'ian + u 完全同韻母鏈！水泥建築與煙霧對比', bar: '灰色的【煙霧】爬上廢棄的【建築】，這是屬於我們的地下國度' }
+            ],
+            tier2_phonetic: [
+              { word: '眷顧', py: 'juàn gù', match: '100% [uan + u]', vibe: 'related', reason: '鼻音收尾加 -u 聽感極順', bar: '幸運從來沒有【眷顧】，只有房間裡的【煙霧】陪我度過低谷' },
+              { word: '顛覆', py: 'diān fù', match: '100% [ian + u]', vibe: 'battle', reason: 'ian + u 100% 對齊！硬核宣言必備', bar: '從地下室竄出的【煙霧】，準備把整個主流排行榜徹底【顛覆】' },
+              { word: '天賦', py: 'tiān fù', match: '100% [ian + u]', vibe: 'battle', reason: 'ian + u 完全同韻母鏈', bar: '不用羨慕別人的【天賦】，我們在【煙霧】裡把苦練當作日常任務' },
+              { word: '面目', py: 'miàn mù', match: '100% [ian + u]', vibe: 'street', reason: '煙霧中看不清真面目', bar: '隔著藍紅色的【煙霧】，誰還分得清鏡子裡的真實【面目】' }
+            ],
+            tier3_slant: [
+              { word: '窗戶', py: 'chuāng hù', match: '通押 [ang≈ian + u]', vibe: 'street', reason: '台灣口語 an/ang 通押，煙霧與窗戶天生一對', bar: '藍色的【煙霧】緩緩飄出半開的鐵皮【窗戶】' },
+              { word: 'Brand New', py: 'brænd nyū', match: '中英雙押 [an + u]', vibe: 'battle', reason: 'Brand (an) + New (u) 對齊煙霧 (ian + u)', bar: '散去過去的【煙霧】，這張 Mixtape 給你最純的【Brand New】' }
+            ]
+          },
+          3: {
+            ruleNote: '三字連擊鎖定：對齊「吐煙霧 / 白煙霧」',
+            tier1_semantic: [
+              { word: '看清楚', py: 'kàn qīng chǔ', match: '尾韻與節奏對齊', vibe: 'street', reason: '在煙霧裡看清楚真相', bar: '隔著一層【白煙霧】，反而把誰是真兄弟【看清楚】' },
+              { word: '不羨慕', py: 'bù xiàn mù', match: '100% [u + ian + u]', vibe: 'battle', reason: '「吐煙霧 (tǔ yān wù)」對「不羨慕 (bù xiàn mù)」，u + ian + u 100% 神級三押！', bar: '靠在暗巷牆角慢慢【吐煙霧】，那些商業包裝的假貨我們從來【不羨慕】' }
+            ],
+            tier2_phonetic: [
+              { word: '沒天賦', py: 'méi tiān fù', match: '三押 [ei + ian + u]', vibe: 'battle', reason: '後兩字 ian + u 完全咬合', bar: '吹散眼前的【白煙霧】，用一萬小時的苦練打臉說我【沒天賦】' }
+            ],
+            tier3_slant: [
+              { word: 'Old Tattoo', py: 'ōld tæ tū', match: '中英三押', vibe: 'street', reason: '煙霧與舊刺青意象結合', bar: '手指夾著菸【吐煙霧】，低頭看著手腕上的【Old Tattoo】' }
+            ]
+          },
+          4: {
+            ruleNote: '四字連擊鎖定：對齊「滿室煙霧 / 吐出煙霧」',
+            tier1_semantic: [
+              { word: '義無反顧', py: 'yì wú fǎn gù', match: '四字成語對位', vibe: 'battle', reason: '穿過煙霧義無反顧', bar: '穿過地下室的【滿室煙霧】，踏上這條路我們【義無反顧】' }
+            ],
+            tier2_phonetic: [
+              { word: '天翻地覆', py: 'tiān fān dì fù', match: '四字強押', vibe: 'battle', reason: '適合副歌收尾', bar: '當我們從暗巷【吐出煙霧】，整座城市準備【天翻地覆】' }
+            ],
+            tier3_slant: []
+          }
+        }
+      },
+
+      '刺青': {
+        chainLabel: 'cì qīng ➔ 韻母鏈 [i] + [ing / eng]',
+        coreVowels: ['i', 'ing'],
+        bySyllable: {
+          1: {
+            ruleNote: '單字尾韻鎖定：[-ing / -eng / -in]（中東/人辰通押）',
+            tier1_semantic: [
+              { word: '傷痕', py: 'shāng hén', match: '口語通押 [-en]', vibe: 'street', reason: '刺青與傷痕的雙重印記', bar: '皮膚上的刺青，是把過去的傷痕變成藝術品' }
+            ],
+            tier2_phonetic: [
+              { word: '聲音', py: 'shēng yīn', match: '通押 [-in]', vibe: 'related', reason: '刺青是不說話的聲音', bar: '每一道黑色的刺青，都是靈魂不妥協的聲音' }
+            ],
+            tier3_slant: []
+          },
+          2: {
+            ruleNote: '雙字鎖定：[i] + [ing / in / eng]',
+            tier1_semantic: [
+              { word: '死心', py: 'sǐ xīn', match: '通押 [i + in≈ing]', vibe: 'street', reason: '平舌聲母 s/c + i + in/ing，咬字極度接近！', bar: '把信念刻成背上的【刺青】，對這場地下遊戲我從沒打算【死心】' },
+              { word: '寂靜', py: 'jì jìng', match: '100% [i + ing]', vibe: 'street', reason: '深夜刺青針頭嗡嗡聲與周遭的寂靜', bar: '針頭刺進皮膚的【刺青】，打破了凌晨三點工作室的【寂靜】' },
+              { word: '宿命', py: 'sù mìng', match: '近音 [u + ing]', vibe: 'related', reason: '刺在身上的宿命', bar: '洗不掉的黑色【刺青】，像我們生來就屬於地下的【宿命】' }
+            ],
+            tier2_phonetic: [
+              { word: '字跡', py: 'zì jì', match: '頭韻雙押', vibe: 'related', reason: '歌詞字跡如同刺青', bar: '筆記本上力透紙背的【字跡】，就像一輩子抹不掉的【刺青】' },
+              { word: '致敬', py: 'zhì jìng', match: '100% [i + ing]', vibe: 'battle', reason: '捲舌與平舌 i + ing 完美對齊！', bar: '舊學校的玫瑰【刺青】，是對黃金年代傳奇最深的【致敬】' },
+              { word: '自省', py: 'zì xǐng', match: '100% [i + ing]', vibe: 'related', reason: 'z/c 聲母 + i + ing 完全同構！', bar: '每一次針扎的【刺青】，都是與過去對話的深夜【自省】' },
+              { word: '事情', py: 'shì qíng', match: '100% [i + ing]', vibe: 'jump', reason: '日常敘事極好入詞', bar: '有些忘不掉的【事情】，最後都變成了袖口下的【刺青】' }
+            ],
+            tier3_slant: [
+              { word: '清醒', py: 'qīng xǐng', match: '疊韻 [ing + ing]', vibe: 'street', reason: '疼痛讓人保持清醒', bar: '皮膚發燙的【刺青】，提醒我在混濁的圈子裡保持【清醒】' }
+            ]
+          },
+          3: {
+            ruleNote: '三字連擊鎖定：對齊「舊刺青 / 黑刺青」',
+            tier1_semantic: [
+              { word: '沒聲音', py: 'méi shēng yīn', match: '通押 [ei + eng + in]', vibe: 'street', reason: '黑刺青 (hēi cì qīng) 對 沒聲音 (méi shēng yīn)', bar: '手臂上的【黑刺青】，替那些說不出口的痛發出了【沒聲音】的吶喊' }
+            ],
+            tier2_phonetic: [
+              { word: '做自己', py: 'zuò zì jǐ', match: '節奏對位', vibe: 'battle', reason: '態度鮮明', bar: '不蓋掉身上的【舊刺青】，站上台我只管【做自己】' }
+            ],
+            tier3_slant: []
+          },
+          4: {
+            ruleNote: '四字連擊鎖定：對齊「黑色刺青」',
+            tier1_semantic: [
+              { word: '刻骨銘心', py: 'kè gǔ míng xīn', match: '尾二字強押 [ing + in]', vibe: 'related', reason: '刺青與刻骨銘心意象完全合一', bar: '針頭留下的【黑色刺青】，每一道線條都【刻骨銘心】' }
+            ],
+            tier2_phonetic: [],
+            tier3_slant: []
+          }
+        }
+      },
+
+      '威士忌': {
+        chainLabel: 'wēi shì jì ➔ 韻母鏈 [ei] + [i] + [i]',
+        coreVowels: ['ei', 'i', 'i'],
+        bySyllable: {
+          1: {
+            ruleNote: '單字尾韻鎖定：[-i]（一七轍）',
+            tier1_semantic: [
+              { word: '麻痺', py: 'má bì', match: '100% [-i]', vibe: 'street', reason: '酒精與麻痺', bar: '倒滿最後一杯威士忌，不讓廉價的同情把我麻痺' }
+            ],
+            tier2_phonetic: [
+              { word: '秘密', py: 'mì mì', match: '100% [-i]', vibe: 'related', reason: '酒後秘密', bar: '冰塊融化在威士忌，杯底藏著沒人知道的秘密' }
+            ],
+            tier3_slant: []
+          },
+          2: {
+            ruleNote: '雙字鎖定：[i] + [i]（對齊「士忌」）',
+            tier1_semantic: [
+              { word: '日記', py: 'rì jì', match: '100% [i + i]', vibe: 'related', reason: '深夜寫歌日記配威士忌', bar: '桌上擺著半瓶【威士忌】，旁邊是寫滿韻腳的舊【日記】' },
+              { word: '失憶', py: 'shī yì', match: '100% [i + i]', vibe: 'street', reason: 'sh + i 與 j/y + i 完全對位！喝到失憶', bar: '一口乾掉烈性的【威士忌】，今晚只想短暫地【失憶】' }
+            ],
+            tier2_phonetic: [
+              { word: '士氣', py: 'shì qì', match: '100% [i + i]', vibe: 'battle', reason: '與「士忌」聲母韻母 99% 重疊', bar: '慶功宴上開一瓶【威士忌】，兄弟們韻腳上膛提振【士氣】' },
+              { word: '實際', py: 'shí jì', match: '100% [i + i]', vibe: 'jump', reason: 'sh + i + j + i 完全同音異調！', bar: '別跟我談那些虛假的數據，倒杯【威士忌】我們只看【實際】' }
+            ],
+            tier3_slant: []
+          },
+          3: {
+            ruleNote: '三字連擊鎖定：[ei] + [i] + [i]（完美三音節連押）',
+            tier1_semantic: [
+              { word: '沒力氣', py: 'méi lì qì', match: '100% [ei + i + i]', vibe: 'street', reason: 'ei + i + i 三個字韻母 100% 對齊！深夜疲憊喝威士忌', bar: '宿醉醒來連罵人都【沒力氣】，桌上還留著昨晚喝剩的【威士忌】' },
+              { word: '沒意義', py: 'méi yì yì', match: '100% [ei + i + i]', vibe: 'street', reason: 'ei + i + i 完全吻合，地下厭世感滿點', bar: '那些討好主流的假笑太【沒意義】，不如在地下室獨自喝著【威士忌】' },
+              { word: '被遺棄', py: 'bèi yí qì', match: '100% [ei + i + i]', vibe: 'related', reason: 'ei + i + i 完美三押，孤獨街頭意象', bar: '坐在【被遺棄】的舊沙發裡，琥珀色的【威士忌】淋在傷口上' }
+            ],
+            tier2_phonetic: [
+              { word: '黑日曆', py: 'hēi rì lì', match: '100% [ei + i + i]', vibe: 'street', reason: 'ei + i + i 聲學完全同步', bar: '撕下一頁又一頁的【黑日曆】，用最純的【威士忌】敬那些苦日子' },
+              { word: '北鼻息 / 背記憶', py: 'bèi jì yì', match: '100% [ei + i + i]', vibe: 'related', reason: '背著記憶喝威士忌', bar: '誰不是一邊【背記憶】一邊往前走，把心事全部兌進這杯【威士忌】' }
+            ],
+            tier3_slant: [
+              { word: 'Make it lit', py: 'mēik ɪt lɪt', match: '中英三押 [ei + i + i]', vibe: 'battle', reason: 'Make (ei) + it (i) + lit (i) 完美對應威士忌 (wēi shì jì)！', bar: '喉嚨燒著純麥【威士忌】，站上地下舞台我們【Make it lit】' }
+            ]
+          },
+          4: {
+            ruleNote: '四字連擊鎖定：對齊「喝威士忌」',
+            tier1_semantic: [
+              { word: '毫無畏懼', py: 'háo wú wèi jù', match: '近音四押', vibe: 'battle', reason: '烈酒壯膽毫無畏懼', bar: '上台前先仰頭【喝威士忌】，面對任何對手我們【毫無畏懼】' }
+            ],
+            tier2_phonetic: [],
+            tier3_slant: []
+          }
+        }
+      }
+    };
+
+    // Fallback dynamic phonetic generator for custom user-typed words not in presets
+    const VOWEL_POOL_MAP = {
+      'a': { label: '發花轍 (a/ia/ua)', chars1: ['疤', '花', '沙', '塔', '罰', '扎'], words2: ['傷疤', '塗鴉', '掙扎', '崩塌', '籌碼', '懲罰'], words3: ['舊傷疤', '在掙扎', '不說話', '黑塗鴉'], words4: ['一絲不掛', '風吹雨打'] },
+      'ao': { label: '遙條轍 (ao/iao)', chars1: ['刀', '燒', '牢', '潮', '逃', '傲'], words2: ['咆哮', '記號', '出鞘', '步調', '煎熬', '孤傲'], words3: ['地下道', '武士刀', '止痛藥', '沒依靠'], words4: ['靈魂出竅', '付之一笑'] },
+      'ang': { label: '江陽轍 (ang/iang/uang)', chars1: ['光', '傷', '槍', '牆', '浪', '狂'], words2: ['槍膛', '戰場', '街巷', '方向', '胸膛', '倔強'], words3: ['逆著光', '地下黨', '避風港', '聚光燈'], words4: ['橫衝直撞', '熱血沸騰'] },
+      'an': { label: '言前轍 (an/ian/uan)', chars1: ['暗', '煙', '難', '岸', '寒', '嘆'], words2: ['深淵', '孤單', '夜晚', '極限', '諾言', '依然'], words3: ['太孤單', '在夜晚', '沒人管', '舊照片'], words4: ['肆無忌憚', '一刀兩斷'] },
+      'en': { label: '人辰/中東通押 (en/in/eng/ing)', chars1: ['針', '深', '魂', '冷', '影', '命'], words2: ['靈魂', '傷痕', '清晨', '刺青', '寂靜', '宿命'], words3: ['黑刺青', '沒聲音', '太清醒', '舊傷痕'], words4: ['刻骨銘心', '夜深人靜'] },
+      'u': { label: '姑蘇轍 (u)', chars1: ['霧', '路', '骨', '毒', '哭', '怒'], words2: ['窗戶', '荒蕪', '香霧', '倉庫', '當舖', '殘酷', '煙霧', '雙目'], words3: ['開窗戶', '太荒蕪', '在倉庫', '白煙霧', '不羨慕'], words4: ['打開窗戶', '大開倉庫', '義無反顧'] },
+      'i': { label: '一七轍 (i/ü)', chars1: ['夜', '血', '謎', '戲', '氣', '底'], words2: ['呼吸', '秘密', '日記', '失憶', '痕跡', '徹底'], words3: ['威士忌', '沒力氣', '被遺棄', '沒意義'], words4: ['歇斯底里', '身不由己'] },
+      'ou': { label: '由求轍 (ou/iu)', chars1: ['口', '手', '酒', '走', '愁', '吼'], words2: ['街頭', '傷口', '自由', '藉口', '怒吼', '停留'], words3: ['在街頭', '不回頭', '舊傷口', '一杯酒'], words4: ['一無所有', '風雨同舟'] }
+    };
+
+    // =========================================================================
+    // 2. WIKI FILES REPOSITORY (與 AGENTS.md, index.md, log.md 同步)
+    // =========================================================================
+    const WIKI_FILES = [
+      {
+        id: 'agents',
+        path: 'AGENTS.md',
+        title: 'AGENTS.md — 押韻嘻哈創作工具人對韻引擎與維護規範',
+        layer: 'Schema 規範層',
+        content: `# AGENTS.md — 押韻嘻哈創作工具人 LLM Wiki 維護與對韻引擎規範
+
+## 一、 核心對韻匹配法則 (Core Rhyme Matching Engine Rules)
+當作曲家提供一個目標詞（例如：「窗戶」）要求尋找押韻時，嚴格遵循以下三階優先級：
+
+1. **第一優先：發音咬字精準度（Phonetic Precision — 最重要！）**
+   - 拆解目標詞每個字的韻母鏈（Vowel Chain），例如「窗戶」(\`chuāng hù\`) = \`[ang] + [u]\`。
+   - 嚴格鎖定同韻母鏈詞彙：如「香霧」、「荒蕪」、「倉庫」、「雙目」、「當舖」、「常駐」、「商務」、「光顧」。
+
+2. **第二優先：語義與情境關聯（Semantic & Vibe Relevance — 次要加分！）**
+   - 在發音吻合的前提下，優先將與「窗戶 / 深夜 / 地下煙霧 / 房間」意境相關的詞排在最前面（如：香霧、荒蕪、雙目、倉庫）。
+   - 就算語義無關（如：商務、匡扶、強渡），只要發音咬得準，也完整列在第二梯隊供激發跳躍式 Punchline！
+
+3. **指定押韻字數機制 (1 / 2 / 3 / 4+ 字)**
+   - 1 字單押：僅對齊尾字 \`[-u]\`（迷霧、孤獨、夜幕）。
+   - 2 字雙押：對齊 \`[ang] + [u]\`（香霧、荒蕪、倉庫、當舖）。
+   - 3 字三押：對齊「開窗戶」\`[ai] + [ang] + [u]\`（太荒蕪、在倉庫、白煙霧、賣當舖）。
+   - 4 字四押：對齊「打開窗戶」\`[a] + [ai] + [ang] + [u]\`（大開倉庫、散開香霧、拿來當舖）。`
+      },
+      {
+        id: 'index',
+        path: 'wiki/index.md',
+        title: 'index.md — 內容導向總目錄',
+        layer: 'Wiki 知識庫層',
+        content: `# 押韻嘻哈創作工具人 Wiki — 總目錄 (Index)
+
+## 1. 韻腳金庫 (wiki/rhyme_vault/)
+- [[rhyme_vault/rhyme_ang_u_double|江陽＋姑蘇 (ang + u) 雙押與多押專頁（窗戶/荒蕪/香霧）]]
+- [[rhyme_vault/rhyme_ao_yao_tiao|遙條轍 (ao / iao) 多押與連擊金庫（地下道/武士刀/止痛藥）]]
+- [[rhyme_vault/rhyme_ian_u_smoke|言前＋姑蘇 (ian + u) 煙霧雙關韻庫（煙霧/厭惡/建築/顛覆）]]
+
+## 2. Punchline 與修辭庫 (wiki/punchlines/)
+- [[punchlines/wordplay_homophone_formulas|同音異義與雙關 (Wordplay) 鍛造公式]]
+- [[punchlines/smoke_and_tattoo_imagery|地下煙霧與刺青 (Smoke & Tattoo) 視覺隱喻鏈]]
+
+## 3. 創作工作台 (wiki/drafts_workbench/)
+- [[drafts_workbench/verse_window_smoke_16bars|〈鐵窗與香霧〉90 BPM 地下創作草稿]]`
+      },
+      {
+        id: 'rhyme_ang_u',
+        path: 'wiki/rhyme_vault/rhyme_ang_u_double.md',
+        title: '江陽＋姑蘇 (ang + u) 雙押與多押專頁（窗戶範例）',
+        layer: 'Wiki 韻腳金庫',
+        content: `---
+title: "江陽＋姑蘇 (ang + u) 雙押與多押專頁"
+category: rhyme_vault
+tags: [雙押, 三押, ang_u, 窗戶, 地下意象]
+updated: 2026-11-10
+---
+
+# 江陽＋姑蘇 (\`ang + u\`) 韻母鏈金庫（核心詞：窗戶 \`chuāng hù\`）
+
+## 🔥 Tier 1：發音 100% 吻合 ＋ 地下/深夜意境高度相關
+- **香霧** (\`xiāng wù\`)：推開頂樓的窗戶，吐出一口藍紅交錯的香霧。
+- **荒蕪** (\`huāng wú\`)：隔著起霧的窗戶，看著這座城市半夜的荒蕪。
+- **雙目** (\`shuāng mù\`)：貼著冰冷的窗戶，血絲佈滿熬夜寫詞的雙目。
+- **倉庫** (\`cāng kù\`)：沒有窗戶的地下倉庫，是我們磨利韻腳的兵工廠。
+- **當舖** (\`dàng pù\`)：從窄小的窗戶看出去，對街只剩閃著紅光的當舖。
+- **常駐** (\`cháng zhù\`)：沒有陽光進來的窗戶，只有失眠跟菸蒂在這裡常駐。
+
+## ⚡ Tier 2：發音 100% 吻合 ＋ 態度轉折/無關語義跳押
+- **商務** (\`shāng wù\`)：坐在地下室看著半截窗戶，我們玩純的從不搞虛偽商務。
+- **光顧** (\`guāng gù\`)：鎖上房間的窗戶，我的內心世界不需要外人光顧。
+- **航路** (\`háng lù\`) / **帳戶** (\`zhàng hù\`) / **強渡** (\`qiáng dù\`) / **匡扶** (\`kuāng fú\`)`
+      },
+      {
+        id: 'log',
+        path: 'wiki/log.md',
+        title: 'log.md — 時間導向操作日誌 (Append-Only)',
+        layer: 'Wiki 知識庫層',
+        content: `# 押韻嘻哈創作工具人 Wiki — 維護日誌 (Log)
+
+## [2026-11-10] query | 拆解「窗戶 (ang + u)」1～4 字分級韻腳庫
+- **目標詞**：窗戶 (\`chuāng hù\`)
+- **優先級策略**：發音韻母鏈優先 ➔ 語義相關次之 ➔ 指定字數鎖定
+- **寫入頁面**：新增 \`wiki/rhyme_vault/rhyme_ang_u_double.md\`
+
+## [2026-11-10] init | 初始化 Underground Smoke & Tattoo 押韻知識庫
+- **建立架構**：完成 \`AGENTS.md\`、\`raw/\`、\`wiki/\` 與地下風格互動式對韻引擎。`
+      }
+    ];
+
+    // =========================================================================
+    // 3. CO-DESIGN WISHLIST MODULES (回答「還需要什麼東西」的互動提案)
+    // =========================================================================
+    const WISHLIST_FEATURES = [
+      {
+        id: 'tone_pattern',
+        badge: '聲調平仄鎖定',
+        title: '1. 平仄聲調旋律鎖定 (Tone Melody Lock)',
+        desc: '中文是聲調語言，有時候韻母對了但「聲調起伏」不對會像倒音。可以讓你勾選是否連聲調組合（例如「窗戶」是 1聲+4聲，優先找「倉庫 1+4」、「商務 1+4」）也一起鎖定！',
+        active: true
+      },
+      {
+        id: 'taiwanese_en_mix',
+        badge: '台語/英文諧音跳押',
+        title: '2. 台語 / 英文 / 中文字跨語言諧音雷達 (Mosaic Rhyme)',
+        desc: '台灣地下饒舌常把國語雙押接上台語俗諺或英文單字（例如「煙霧 yān wù」押「Brand New」或「Tattoo」）。需要幫你內建「國台英三語諧音轉換器」嗎？',
+        active: true
+      },
+      {
+        id: 'cliche_police',
+        badge: '陳詞濫調警報',
+        title: '3. 芭樂韻腳黑名單警報 (Cliché Rhyme Blocker)',
+        desc: '當你不小心寫出太常被用爛的韻腳（例如：夢想/方向、真實/堅持、天空/彩虹）時，自動跳出紅燈警告，並強制換成更有地下顆粒感的替代詞！',
+        active: false
+      },
+      {
+        id: 'bridge_word_gen',
+        badge: '雙韻造句橋樑',
+        title: '4. 兩顆無關韻腳的「Punchline 造句搭橋器」',
+        desc: '當你挑了一個發音超準但意思完全無關的詞（例如「窗戶」配「商務」或「當舖」），一鍵幫你生成 3 種把這兩個詞串進同一句 Bar 的轉折邏輯！',
+        active: false
+      },
+      {
+        id: 'syllable_density',
+        badge: 'BPM 字數測速',
+        title: '5. 每小節音節密度與咬字防卡檢測',
+        desc: '根據你設定的 Beat BPM（如 90 Boom Bap 或 140 Drill），即時標出哪一行字數太密會喘不過氣，建議你在哪個字後面加換氣口（^）。',
+        active: false
+      },
+      {
+        id: 'personal_style_rag',
+        badge: '個人詞庫記憶',
+        title: '6. 專屬你的「用詞習慣權重」與禁用詞設定',
+        desc: '隨著你丟進 raw/lyrics/ 的個人作品越來越多，優先推薦符合你個人口頭禪與地下世界觀的詞彙。',
+        active: false
+      }
+    ];
+
+    // =========================================================================
+    // 4. APPLICATION STATE & RENDERING LOGIC
+    // =========================================================================
+    const state = {
+      activeTab: 'engine',
+      targetWord: '窗戶',
+      syllableCount: 2,
+      vibeFilter: 'all',
+      includeSlant: true,
+      pinnedRhymes: [
+        { word: '香霧', py: 'xiāng wù', note: '窗戶 ang+u 雙押' },
+        { word: '荒蕪', py: 'huāng wú', note: '窗戶 ang+u 雙押' },
+        { word: '倉庫', py: 'cāng kù', note: '窗戶 ang+u 雙押' },
+        { word: '武士刀', py: 'wǔ shì dāo', note: '地下道 三押' }
+      ],
+      selectedWikiId: 'agents',
+      beatPlaying: false,
+      bpm: 90,
+      beatStep: 0,
+      beatIntervalId: null,
+      audioCtx: null
+    };
+
+    function showToast(msg) {
+      const banner = document.getElementById('toastBanner');
+      const text = document.getElementById('toastMessage');
+      text.textContent = msg;
+      banner.classList.remove('hidden');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 2400);
+    }
+
+    // Decompose any input word into phonetic chips
+    function renderPhoneticBreakdown(word, sylCount) {
+      const container = document.getElementById('phoneticBreakdownDisplay');
+      const clean = (word || '').trim() || '窗戶';
+      const chars = Array.from(clean);
+
+      let html = '';
+      chars.forEach((ch, idx) => {
+        const info = CHAR_PHONETICS[ch] || {
+          py: '音節 ' + (idx + 1),
+          vowel: '韻母對齊',
+          tone: '',
+          group: '自動聲學分析'
+        };
+        html += `
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-stone-900 border border-stone-700/80">
+            <span class="text-base font-black text-stone-100">${ch}</span>
+            <span class="text-xs font-mono-code text-red-400">${info.py}</span>
+            <span class="text-[11px] font-mono-code px-1.5 py-0.2 rounded bg-red-950/90 text-red-200 border border-red-800/50">[${info.vowel}]</span>
+          </div>
+        `;
+        if (idx < chars.length - 1) {
+          html += `<span class="text-stone-600 font-mono-code font-bold">+</span>`;
+        }
+      });
+
+      html += `
+        <span class="ml-1 text-xs px-2.5 py-1 rounded bg-blue-950/80 text-blue-300 border border-blue-800/60 font-mono-code">
+          目標：押 ${sylCount} 個字
+        </span>
+      `;
+      container.innerHTML = html;
+      document.getElementById('syllableHintLabel').textContent = `鎖定 ${sylCount} 字${sylCount === 1 ? '單押' : sylCount === 2 ? '雙押' : sylCount === 3 ? '三押' : '四字連押'}`;
+      document.getElementById('activeTargetSummary').textContent = `目標詞：${clean} （指定押 ${sylCount} 個字）`;
+    }
+
+    // Build fallback rhyme results when user enters a custom word not in presets
+    function buildDynamicRhymeSet(word, sylCount) {
+      const clean = (word || '').trim();
+      const lastChar = clean.slice(-1);
+      const charInfo = CHAR_PHONETICS[lastChar];
+      let poolKey = 'u';
+      if (charInfo) {
+        if (charInfo.vowel.includes('ang')) poolKey = 'ang';
+        else if (charInfo.vowel.includes('ao')) poolKey = 'ao';
+        else if (charInfo.vowel.includes('an')) poolKey = 'an';
+        else if (charInfo.vowel.includes('en') || charInfo.vowel.includes('in')) poolKey = 'en';
+        else if (charInfo.vowel === 'i') poolKey = 'i';
+        else if (charInfo.vowel === 'a' || charInfo.vowel === 'ia') poolKey = 'a';
+        else if (charInfo.vowel === 'ou') poolKey = 'ou';
+      }
+      const pool = VOWEL_POOL_MAP[poolKey] || VOWEL_POOL_MAP['u'];
+      const list = sylCount === 1 ? pool.chars1 : sylCount === 2 ? pool.words2 : sylCount === 3 ? pool.words3 : pool.words4;
+
+      return {
+        ruleNote: `自動聲學鎖定：依「${clean}」尾韻母群 ${pool.label} 對齊 ${sylCount} 個字`,
+        tier1_semantic: list.slice(0, Math.ceil(list.length / 2)).map(w => ({
+          word: w,
+          py: pool.label,
+          match: `100% ${sylCount}字對齊`,
+          vibe: 'street',
+          reason: `與「${clean}」發音結構吻合且具地下敘事畫面感`,
+          bar: `把【${clean}】寫進深夜的節拍，看著眼前的【${w}】慢慢散開`
+        })),
+        tier2_phonetic: list.slice(Math.ceil(list.length / 2)).map(w => ({
+          word: w,
+          py: pool.label,
+          match: `100% ${sylCount}字對齊`,
+          vibe: 'jump',
+          reason: `純發音強押，可作為跳躍式 Punchline 轉折`,
+          bar: `就算現實只剩【${clean}】，我的韻腳依然穩得像【${w}】`
+        })),
+        tier3_slant: [
+          {
+            word: 'Underground Crew',
+            py: '跨語言諧音混押',
+            match: '口語/中英混押',
+            vibe: 'street',
+            reason: '跨語言尾音共鳴混押',
+            bar: `從【${clean}】出發的靈感，代表最純的 Underground Crew`
+          }
+        ]
+      };
+    }
+
+    function filterItemsByVibe(items, vibe) {
+      if (!items) return [];
+      if (vibe === 'all') return items;
+      if (vibe === 'related') return items.filter(i => i.vibe === 'related' || i.vibe === 'street');
+      return items.filter(i => i.vibe === vibe);
+    }
+
+    function renderRhymeCardHTML(item) {
+      return `
+        <div class="p-3.5 rounded-lg bg-stone-950/90 border border-stone-800/90 hover:border-red-700/70 transition group flex flex-col justify-between gap-2">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-baseline gap-2">
+                <span class="text-lg font-black text-stone-100 group-hover:text-red-400 transition">${item.word}</span>
+                <span class="text-xs font-mono-code text-stone-400">${item.py}</span>
+              </div>
+              <span class="text-[10px] font-mono-code px-2 py-0.5 rounded bg-red-950/80 text-red-300 border border-red-800/50">
+                ${item.match}
+              </span>
+            </div>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">${item.reason}</p>
+          </div>
+          <div class="pt-2 border-t border-stone-900 flex items-center justify-between gap-2">
+            <span class="text-[11px] text-stone-500 truncate italic">“${item.bar}”</span>
+            <button
+              data-pin-word="${item.word}"
+              data-pin-py="${item.py}"
+              class="pin-rhyme-btn shrink-0 px-2.5 py-1 rounded bg-stone-900 hover:bg-red-900/80 text-stone-300 hover:text-stone-100 text-[11px] font-bold border border-stone-700 transition"
+            >
+              + 釘選入詞
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderRhymeEngine() {
+      const cleanWord = (state.targetWord || '').trim() || '窗戶';
+      const syl = state.syllableCount;
+
+      renderPhoneticBreakdown(cleanWord, syl);
+
+      // Lookup preset or generate dynamic phonetic match
+      const entry = RHYME_VAULT_DB[cleanWord];
+      const sylData = (entry && entry.bySyllable[syl]) ? entry.bySyllable[syl] : buildDynamicRhymeSet(cleanWord, syl);
+
+      const t1 = filterItemsByVibe(sylData.tier1_semantic, state.vibeFilter);
+      const t2 = filterItemsByVibe(sylData.tier2_phonetic, state.vibeFilter);
+      const t3 = state.includeSlant ? filterItemsByVibe(sylData.tier3_slant, state.vibeFilter) : [];
+
+      const container = document.getElementById('rhymeTiersContainer');
+
+      container.innerHTML = `
+        <!-- TIER 1: Phonetic Exact + Semantic Related -->
+        <div class="tattoo-card rounded-xl p-4 sm:p-5 flex flex-col justify-between border-t-2 border-t-red-600">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="text-[11px] font-mono-code uppercase tracking-wider text-red-400 font-bold">PRIORITY TIER 01 // 最優先推薦</span>
+              <span class="text-xs font-mono-code px-2 py-0.5 bg-red-950 text-red-200 rounded">${t1.length} 組</span>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-stone-100 mb-1">🔥 發音精準吻合 ＋ 語義/意境相關</h3>
+            <p class="text-xs text-stone-400 mb-3">${sylData.ruleNote}，且畫面可直接連貫</p>
+            <div class="space-y-2.5">
+              ${t1.length ? t1.map(renderRhymeCardHTML).join('') : '<p class="text-xs text-stone-500 py-4">此篩選條件下無項目，請切換為「全部顯示」。</p>'}
+            </div>
+          </div>
+        </div>
+
+        <!-- TIER 2: Phonetic Exact + Unrelated / Jump Punchline -->
+        <div class="tattoo-card rounded-xl p-4 sm:p-5 flex flex-col justify-between border-t-2 border-t-blue-600">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="text-[11px] font-mono-code uppercase tracking-wider text-blue-400 font-bold">PRIORITY TIER 02 // 發音硬對齊</span>
+              <span class="text-xs font-mono-code px-2 py-0.5 bg-blue-950 text-blue-200 rounded">${t2.length} 組</span>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-stone-100 mb-1">⚡ 發音精準吻合 ＋ 跨領域跳押詞</h3>
+            <p class="text-xs text-stone-400 mb-3">就算意思沒直接關係，發音咬字 100% 對齊，最適合製造意外的 Punchline 轉折</p>
+            <div class="space-y-2.5">
+              ${t2.length ? t2.map(renderRhymeCardHTML).join('') : '<p class="text-xs text-stone-500 py-4">此篩選條件下無項目，請切換為「全部顯示」。</p>'}
+            </div>
+          </div>
+        </div>
+
+        <!-- TIER 3: Slant Rhyme / Taiwanese Mandarin & English Mix -->
+        <div class="tattoo-card rounded-xl p-4 sm:p-5 flex flex-col justify-between border-t-2 border-t-stone-500">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="text-[11px] font-mono-code uppercase tracking-wider text-stone-400 font-bold">PRIORITY TIER 03 // 實戰口語通押</span>
+              <span class="text-xs font-mono-code px-2 py-0.5 bg-stone-900 text-stone-300 rounded">${t3.length} 組</span>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-stone-100 mb-1">🚬 台灣口語近音通押 ＆ 中英混押</h3>
+            <p class="text-xs text-stone-400 mb-3">包含前後鼻音通押 (<code class="text-stone-300">an/ang, en/eng</code>) 與英文/刺青煙霧文化跨語混押</p>
+            <div class="space-y-2.5">
+              ${t3.length ? t3.map(renderRhymeCardHTML).join('') : '<p class="text-xs text-stone-500 py-4">已關閉口語通押或目前字數無額外混押項目。</p>'}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Render sample bars strip at the bottom
+      const allBars = [...t1, ...t2, ...t3].slice(0, 4);
+      const sampleBarsContainer = document.getElementById('sampleBarsContainer');
+      sampleBarsContainer.innerHTML = allBars.map(item => `
+        <div class="p-3 rounded-lg bg-stone-950/90 border border-stone-800 flex items-start justify-between gap-3">
+          <div>
+            <span class="text-xs font-mono-code text-red-400 font-bold">[${cleanWord} ↔ ${item.word}]</span>
+            <p class="text-xs sm:text-sm text-stone-200 mt-1 font-medium">${item.bar}</p>
+          </div>
+          <button
+            data-insert-bar="${item.bar}"
+            class="insert-bar-btn shrink-0 px-2.5 py-1 rounded bg-stone-900 hover:bg-blue-900/70 text-[11px] text-blue-300 border border-blue-800/50 transition"
+          >
+            寫入工作台
+          </button>
+        </div>
+      `).join('');
+
+      // Attach listeners for pin buttons & insert bar buttons
+      document.querySelectorAll('.pin-rhyme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const w = btn.getAttribute('data-pin-word');
+          const py = btn.getAttribute('data-pin-py');
+          if (!state.pinnedRhymes.some(r => r.word === w)) {
+            state.pinnedRhymes.unshift({ word: w, py, note: `${cleanWord} (${syl}字押)` });
+            renderPinnedRhymes();
+          }
+          showToast(`已將「${w} (${py})」釘選進寫詞彈匣！`);
+        });
+      });
+
+      document.querySelectorAll('.insert-bar-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const bar = btn.getAttribute('data-insert-bar');
+          const pad = document.getElementById('lyricPadTextarea');
+          pad.value = pad.value.trim() + '\n' + `[Bar] ${bar} ^ /`;
+          updateBarCounter();
+          showToast('已將示範歌詞行加入「地下寫詞工作台」！');
+        });
+      });
+    }
+
+    // =========================================================================
+    // 5. WIKI BROWSER & WORKBENCH LOGIC
+    // =========================================================================
+    function renderWikiBrowser() {
+      const listEl = document.getElementById('wikiFileList');
+      listEl.innerHTML = WIKI_FILES.map(file => {
+        const isSelected = file.id === state.selectedWikiId;
+        return `
+          <button
+            data-wiki-id="${file.id}"
+            class="wiki-item-btn w-full text-left p-3 rounded-lg border transition flex flex-col gap-0.5 ${
+              isSelected
+                ? 'bg-red-950/50 border-red-700/80 text-stone-100'
+                : 'bg-stone-950/70 border-stone-800/80 text-stone-400 hover:text-stone-200 hover:border-stone-700'
+            }"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono-code text-red-400">${file.path}</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded bg-stone-900 text-stone-400 border border-stone-800">${file.layer}</span>
+            </div>
+            <span class="text-xs sm:text-sm font-bold truncate mt-0.5">${file.title}</span>
+          </button>
+        `;
+      }).join('');
+
+      const activeFile = WIKI_FILES.find(f => f.id === state.selectedWikiId) || WIKI_FILES[0];
+      document.getElementById('wikiViewerPath').textContent = activeFile.path;
+      document.getElementById('wikiViewerTitle').textContent = activeFile.title;
+      document.getElementById('wikiViewerContent').textContent = activeFile.content;
+
+      document.querySelectorAll('.wiki-item-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.selectedWikiId = btn.getAttribute('data-wiki-id');
+          renderWikiBrowser();
+        });
+      });
+    }
+
+    function renderPinnedRhymes() {
+      const badge = document.getElementById('savedCountBadge');
+      badge.textContent = state.pinnedRhymes.length;
+
+      const listEl = document.getElementById('pinnedRhymesList');
+      if (!state.pinnedRhymes.length) {
+        listEl.innerHTML = `<span class="text-xs text-stone-500">目前彈匣是空的，請從「韻腳雷達」點擊「+ 釘選入詞」。</span>`;
+        return;
+      }
+
+      listEl.innerHTML = state.pinnedRhymes.map((item, idx) => `
+        <button
+          data-insert-rhyme="${item.word}"
+          class="insert-rhyme-chip px-3 py-1.5 rounded-lg bg-stone-950 hover:bg-red-950/70 border border-stone-700 hover:border-red-600 text-left transition flex items-center gap-2 group"
+        >
+          <span class="text-sm font-bold text-stone-100 group-hover:text-red-300">${item.word}</span>
+          <span class="text-[11px] font-mono-code text-stone-400">${item.py}</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded bg-stone-900 text-stone-400">${item.note}</span>
+        </button>
+      `).join('');
+
+      document.querySelectorAll('.insert-rhyme-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const word = chip.getAttribute('data-insert-rhyme');
+          const pad = document.getElementById('lyricPadTextarea');
+          const start = pad.selectionStart || pad.value.length;
+          const end = pad.selectionEnd || pad.value.length;
+          const before = pad.value.substring(0, start);
+          const after = pad.value.substring(end);
+          pad.value = `${before}【${word}】${after}`;
+          pad.focus();
+          updateBarCounter();
+          showToast(`已插入「【${word}】」到歌詞草稿！`);
+        });
+      });
+    }
+
+    function updateBarCounter() {
+      const pad = document.getElementById('lyricPadTextarea');
+      const lines = pad.value.split('\n').filter(l => l.trim().length > 0);
+      const rhymeTags = (pad.value.match(/【[^】]+】/g) || []).length;
+      document.getElementById('barCounterInfo').textContent = `目前行數：${lines.length} 行 ｜ 偵測到押韻標記：${rhymeTags} 處`;
+    }
+
+    function renderWishlist() {
+      const grid = document.getElementById('featureWishlistGrid');
+      grid.innerHTML = WISHLIST_FEATURES.map(feat => `
+        <div class="p-4 rounded-xl bg-stone-950/90 border ${feat.active ? 'border-red-700/80 shadow-[0_0_20px_rgba(185,28,28,0.18)]' : 'border-stone-800'} flex flex-col justify-between gap-3">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="text-[11px] font-mono-code px-2 py-0.5 rounded ${feat.active ? 'bg-red-950 text-red-300 border border-red-800' : 'bg-stone-900 text-stone-400 border border-stone-700'}">
+                ${feat.badge}
+              </span>
+              <span class="text-xs font-mono-code ${feat.active ? 'text-red-400 font-bold' : 'text-stone-500'}">
+                ${feat.active ? '● 已預載支援' : '○ 可隨時擴充'}
+              </span>
+            </div>
+            <h4 class="text-sm sm:text-base font-bold text-stone-100 mb-1.5">${feat.title}</h4>
+            <p class="text-xs text-stone-400 leading-relaxed">${feat.desc}</p>
+          </div>
+          <button
+            data-toggle-feat="${feat.id}"
+            class="toggle-feat-btn w-full py-2 rounded text-xs font-bold border transition ${
+              feat.active
+                ? 'bg-red-900/70 border-red-600 text-stone-100 hover:bg-red-800'
+                : 'bg-stone-900 border-stone-700 text-stone-300 hover:border-blue-600 hover:text-blue-200'
+            }"
+          >
+            ${feat.active ? '✓ 已啟用此創作邏輯' : '+ 點擊標記為我想要的功能'}
+          </button>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.toggle-feat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-toggle-feat');
+          const feat = WISHLIST_FEATURES.find(f => f.id === id);
+          if (feat) {
+            feat.active = !feat.active;
+            renderWishlist();
+            showToast(feat.active ? `已開啟「${feat.badge}」模組！` : `已暫停「${feat.badge}」模組`);
+          }
+        });
+      });
+    }
+
+    // =========================================================================
+    // 6. WEB AUDIO API UNDERGROUND BOOM BAP PULSE
+    // =========================================================================
+    function playDrumSound(step) {
+      try {
+        if (!state.audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          state.audioCtx = new AudioContext();
+        }
+        const ctx = state.audioCtx;
+        if (ctx.state === 'suspended') ctx.resume();
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (step === 0 || step === 2) {
+          // Deep Underground 808 / Kick on Beat 1 & 3
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(115, now);
+          osc.frequency.exponentialRampToValueAtTime(38, now + 0.14);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+          osc.start(now);
+          osc.stop(now + 0.17);
+        } else {
+          // Crisp Snare / Rimshot on Beat 2 & 4
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(240, now);
+          osc.frequency.exponentialRampToValueAtTime(95, now + 0.09);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        }
+      } catch (e) {
+        // Ignore audio context restrictions
+      }
+    }
+
+    function startBeatLoop() {
+      if (state.beatIntervalId) clearInterval(state.beatIntervalId);
+      const intervalMs = Math.round((60 / state.bpm) * 1000);
+      const dots = document.querySelectorAll('.beat-dot');
+
+      state.beatIntervalId = setInterval(() => {
+        const s = state.beatStep % 4;
+        dots.forEach((d, idx) => {
+          if (idx === s) {
+            d.className = s % 2 === 1
+              ? 'beat-dot w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]'
+              : 'beat-dot w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa]';
+          } else {
+            d.className = 'beat-dot w-2.5 h-2.5 rounded-full bg-stone-700';
+          }
+        });
+        playDrumSound(s);
+        state.beatStep++;
+      }, intervalMs);
+    }
+
+    function stopBeatLoop() {
+      if (state.beatIntervalId) {
+        clearInterval(state.beatIntervalId);
+        state.beatIntervalId = null;
+      }
+      document.querySelectorAll('.beat-dot').forEach(d => {
+        d.className = 'beat-dot w-2.5 h-2.5 rounded-full bg-stone-700';
+      });
+    }
+
+    // =========================================================================
+    // 7. AMBIENT UNDERGROUND SMOKE CANVAS ANIMATION
+    // =========================================================================
+    function initSmokeCanvas() {
+      const canvas = document.getElementById('smokeCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w = (canvas.width = window.innerWidth);
+      let h = (canvas.height = window.innerHeight);
+
+      window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const puffs = Array.from({ length: 18 }, (_, i) => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 110 + Math.random() * 160,
+        vx: (Math.random() - 0.5) * 0.28,
+        vy: -0.15 - Math.random() * 0.22,
+        hue: i % 3 === 0 ? '185, 28, 28' : i % 3 === 1 ? '30, 58, 138' : '120, 118, 112',
+        alpha: 0.035 + Math.random() * 0.045
+      }));
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (const p of puffs) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.y + p.r < 0) {
+            p.y = h + p.r;
+            p.x = Math.random() * w;
+          }
+          if (p.x - p.r > w) p.x = -p.r;
+          if (p.x + p.r < 0) p.x = w + p.r;
+
+          const grad = ctx.createRadialGradient(p.x, p.y, 10, p.x, p.y, p.r);
+          grad.addColorStop(0, `rgba(${p.hue}, ${p.alpha})`);
+          grad.addColorStop(1, 'rgba(8, 8, 10, 0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    // =========================================================================
+    // 8. EVENT BINDINGS ON LOAD
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      initSmokeCanvas();
+      renderRhymeEngine();
+      renderWikiBrowser();
+      renderPinnedRhymes();
+      renderWishlist();
+      updateBarCounter();
+
+      // Tab Switching
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-tab');
+          state.activeTab = target;
+
+          document.querySelectorAll('.nav-tab-btn').forEach(b => {
+            b.classList.remove('crimson-pill-active');
+            b.classList.add('text-stone-400', 'border-transparent');
+          });
+          btn.classList.add('crimson-pill-active');
+          btn.classList.remove('text-stone-400', 'border-transparent');
+
+          ['engine', 'wiki', 'workbench', 'lab'].forEach(v => {
+            const el = document.getElementById(`view-${v}`);
+            if (el) el.classList.toggle('hidden', v !== target);
+          });
+        });
+      });
+
+      // Analyze Input Button & Enter Key
+      const rhymeInput = document.getElementById('rhymeInput');
+      document.getElementById('analyzeBtn').addEventListener('click', () => {
+        state.targetWord = rhymeInput.value.trim() || '窗戶';
+        renderRhymeEngine();
+      });
+      rhymeInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          state.targetWord = rhymeInput.value.trim() || '窗戶';
+          renderRhymeEngine();
+        }
+      });
+
+      // Syllable Count Buttons (1, 2, 3, 4)
+      document.querySelectorAll('.syl-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const syl = parseInt(btn.getAttribute('data-syl'), 10);
+          state.syllableCount = syl;
+          document.querySelectorAll('.syl-btn').forEach(b => {
+            b.classList.remove('crimson-pill-active');
+            b.classList.add('bg-stone-950', 'text-stone-400', 'border-stone-800');
+          });
+          btn.classList.add('crimson-pill-active');
+          btn.classList.remove('bg-stone-950', 'text-stone-400', 'border-stone-800');
+          renderRhymeEngine();
+        });
+      });
+
+      // Quick Preset Chips
+      document.querySelectorAll('.preset-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const word = chip.getAttribute('data-preset');
+          const syl = parseInt(chip.getAttribute('data-syl'), 10);
+          state.targetWord = word;
+          state.syllableCount = syl;
+          rhymeInput.value = word;
+
+          document.querySelectorAll('.syl-btn').forEach(b => {
+            const bSyl = parseInt(b.getAttribute('data-syl'), 10);
+            if (bSyl === syl) {
+              b.classList.add('crimson-pill-active');
+              b.classList.remove('bg-stone-950', 'text-stone-400', 'border-stone-800');
+            } else {
+              b.classList.remove('crimson-pill-active');
+              b.classList.add('bg-stone-950', 'text-stone-400', 'border-stone-800');
+            }
+          });
+          renderRhymeEngine();
+        });
+      });
+
+      // Vibe Filter & Slant Toggle
+      document.getElementById('vibeFilter').addEventListener('change', e => {
+        state.vibeFilter = e.target.value;
+        renderRhymeEngine();
+      });
+      document.getElementById('slantToggle').addEventListener('change', e => {
+        state.includeSlant = e.target.checked;
+        renderRhymeEngine();
+      });
+
+      // Quick Ingest to Wiki
+      document.getElementById('quickIngestBtn').addEventListener('click', () => {
+        const titleEl = document.getElementById('quickIngestTitle');
+        const bodyEl = document.getElementById('quickIngestBody');
+        const title = titleEl.value.trim() || `${state.targetWord} 韻群擴充筆記`;
+        const body = bodyEl.value.trim() || `收錄於地下對韻引擎：目標詞「${state.targetWord}」(${state.syllableCount}字押)。`;
+
+        const newId = 'custom_' + Date.now();
+        WIKI_FILES.unshift({
+          id: newId,
+          path: `wiki/rhyme_vault/${newId}.md`,
+          title: title,
+          layer: '新入庫 Ingest',
+          content: `---\ntitle: "${title}"\ncategory: rhyme_vault\nupdated: 2026-11-10\n---\n\n# ${title}\n\n${body}\n`
+        });
+
+        // Also append to log.md
+        const logFile = WIKI_FILES.find(f => f.id === 'log');
+        if (logFile) {
+          logFile.content += `\n## [2026-11-10] ingest | ${title}\n- **內容摘要**：${body}\n`;
+        }
+
+        state.selectedWikiId = newId;
+        titleEl.value = '';
+        bodyEl.value = '';
+        renderWikiBrowser();
+        showToast('已成功 Ingest 寫入 Wiki 並同步更新 log.md！');
+      });
+
+      // Copy Wiki Page Markdown
+      document.getElementById('copyWikiPageBtn').addEventListener('click', () => {
+        const content = document.getElementById('wikiViewerContent').textContent;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(content).catch(() => {});
+        }
+        showToast('已複製當前 Wiki 頁面的 Markdown 內容！');
+      });
+
+      // Workbench Controls
+      document.getElementById('lyricPadTextarea').addEventListener('input', updateBarCounter);
+
+      document.getElementById('clearBagBtn').addEventListener('click', () => {
+        state.pinnedRhymes = [];
+        renderPinnedRhymes();
+        showToast('已清空韻腳彈匣');
+      });
+
+      document.getElementById('saveDraftToWikiBtn').addEventListener('click', () => {
+        const padContent = document.getElementById('lyricPadTextarea').value;
+        const draftId = 'draft_' + Date.now();
+        WIKI_FILES.unshift({
+          id: draftId,
+          path: 'wiki/drafts_workbench/underground_session.md',
+          title: `〈地下寫詞工作台草稿〉(${state.bpm} BPM)`,
+          layer: '工作台回存',
+          content: `---\ntitle: "地下寫詞工作台草稿"\ncategory: drafts_workbench\nbpm: ${state.bpm}\nupdated: 2026-11-10\n---\n\n# 地下寫詞工作台草稿\n\n\`\`\`text\n${padContent}\n\`\`\`\n`
+        });
+        state.selectedWikiId = draftId;
+        renderWikiBrowser();
+        showToast('已將草稿回存至 wiki/drafts_workbench/！可切至 Wiki 分頁檢視。');
+      });
+
+      document.getElementById('copyDraftBtn').addEventListener('click', () => {
+        const pad = document.getElementById('lyricPadTextarea');
+        pad.select();
+        document.execCommand('copy');
+        showToast('已複製 16 Bars 歌詞草稿！');
+      });
+
+      // BPM Slider & Beat Toggle
+      const bpmSlider = document.getElementById('bpmSlider');
+      const bpmDisplay = document.getElementById('bpmValueDisplay');
+      const toggleBeatBtn = document.getElementById('toggleBeatBtn');
+
+      bpmSlider.addEventListener('input', e => {
+        state.bpm = parseInt(e.target.value, 10);
+        bpmDisplay.textContent = `${state.bpm} BPM`;
+        if (state.beatPlaying) {
+          startBeatLoop();
+        } else {
+          toggleBeatBtn.textContent = `▶ 啟動 ${state.bpm} BPM 地下鼓點預覽`;
+        }
+      });
+
+      toggleBeatBtn.addEventListener('click', () => {
+        state.beatPlaying = !state.beatPlaying;
+        if (state.beatPlaying) {
+          toggleBeatBtn.textContent = `⏹ 停止鼓點 (${state.bpm} BPM 播放中)`;
+          toggleBeatBtn.classList.add('indigo-pill-active');
+          startBeatLoop();
+        } else {
+          toggleBeatBtn.textContent = `▶ 啟動 ${state.bpm} BPM 地下鼓點預覽`;
+          toggleBeatBtn.classList.remove('indigo-pill-active');
+          stopBeatLoop();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
